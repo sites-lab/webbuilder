@@ -22,6 +22,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
+          publish_dir: .
           publish_branch: gh-pages
           exclude_assets: '.github,.git,.gitignore,README.md,INSTRUCTIONS.txt,SETUP_GUIDE.txt,GITHUB_PUSH.txt'
