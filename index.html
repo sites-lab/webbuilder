@@ -1,4 +1,6 @@
 
+
+
 <!DOCTYPE html>
 <html lang="ro">
 <head>
@@ -6,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebBuilder - Professional Web Services</title>
  <!-- FAVICON CODE - ADD HERE -->
-    <link rel="icon" href="https://img.icons8.com/fluency/96/000000/rocket.png">
+    <link rel="icon" type="image/png" href="rocket.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2954,10 +2956,10 @@
     </style>
 
     <!-- Firebase -->
-    <script src="firebase-config.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
     <script>
         let _db = null;
         try {
@@ -3796,15 +3798,7 @@
         </div>
     </div>
 
-    <!-- Buton WhatsApp flotant -->
-    <a href="https://wa.me/40729552767" class="whatsapp-float" target="_blank">
-        <i class="fab fa-whatsapp"></i>
-    </a>
 
-    <!-- Buton Telegram flotant -->
-    <a href="https://t.me/LoveBomboclaut" class="telegram-float" target="_blank">
-        <i class="fab fa-telegram"></i>
-    </a>
 
     <script>
         // Enhanced Mobile Menu System
@@ -4098,6 +4092,19 @@ this.packageTabs.forEach(tab => {
                 }, 500);
             }
         }
+
+        // Fix: instantly hide loading screen when restored from bfcache (back button)
+        window.addEventListener('pageshow', function(e) {
+            if (e.persisted) {
+                var ls = document.getElementById('loading-screen');
+                if (ls) {
+                    ls.style.opacity = '0';
+                    ls.style.display = 'none';
+                }
+                document.body.classList.remove('preload');
+                document.body.style.opacity = '1';
+            }
+        });
 
         // Enhanced Language System - FIXED
         class LanguageSystem {
@@ -5173,5 +5180,64 @@ return false;
 
     <!-- User Auth -->
     <script src="auth.js"></script>
+
+    <!-- Floating Chat + Order Tracker -->
+    <script src="chat.js"></script>
+
+    <!-- CONTACT FAB -->
+    <style>
+        /* Hide the blue chat bubble — contact FAB replaces it */
+        #wbp-bubble { display: none !important; }
+        /* Reposition panel to open from bottom-right without the bubble */
+        #wbp-panel { bottom: 28px !important; }
+
+        .contact-fab-wrap{position:fixed;bottom:28px;right:28px;z-index:2000;display:flex;flex-direction:column;align-items:center;gap:12px;}
+        .contact-fab{width:68px;height:68px;background:linear-gradient(135deg,#25d366,#128c7e);border:none;border-radius:50%;color:white;font-size:1.8rem;cursor:pointer;box-shadow:0 6px 20px rgba(37,211,102,0.45);display:flex;align-items:center;justify-content:center;transition:all .25s;position:relative;}
+        .contact-fab:hover{transform:scale(1.1);box-shadow:0 10px 28px rgba(37,211,102,0.55);}
+        .contact-fab-icon{transition:transform .3s ease;}
+        .contact-fab.open .contact-fab-icon{transform:rotate(45deg);}
+        .contact-option{width:50px;height:50px;border-radius:50%;border:none;color:white;font-size:1.25rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,0.2);transition:all .3s cubic-bezier(.34,1.56,.64,1);transform:scale(0) translateY(10px);opacity:0;pointer-events:none;text-decoration:none;}
+        .contact-option.wa{background:linear-gradient(135deg,#25d366,#128c7e);}
+        .contact-option.tg{background:linear-gradient(135deg,#2aabee,#1a8ccc);}
+        .contact-option:hover{transform:scale(1.12) translateY(0) !important;box-shadow:0 8px 22px rgba(0,0,0,0.25);}
+        .contact-fab-wrap.open .contact-option{transform:scale(1) translateY(0);opacity:1;pointer-events:all;}
+        .contact-option-label{position:absolute;right:60px;background:rgba(15,23,42,.82);color:white;font-size:0.75rem;font-weight:700;padding:5px 10px;border-radius:8px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s;backdrop-filter:blur(4px);}
+        .contact-option:hover .contact-option-label{opacity:1;}
+        @media(max-width:576px){
+            .contact-fab-wrap{bottom:20px;right:16px;}
+            .contact-fab{width:60px;height:60px;font-size:1.6rem;}
+            .contact-option{width:46px;height:46px;font-size:1.1rem;}
+        }
+    </style>
+    <div class="contact-fab-wrap" id="contactFabWrap">
+        <a class="contact-option tg" href="https://t.me/LoveBomoclaut" target="_blank" rel="noopener" title="Telegram" style="transition-delay:.08s">
+            <i class="fab fa-telegram-plane"></i>
+            <span class="contact-option-label">Telegram</span>
+        </a>
+        <a class="contact-option wa" href="https://wa.me/40729552767" target="_blank" rel="noopener" title="WhatsApp" style="transition-delay:.04s">
+            <i class="fab fa-whatsapp"></i>
+            <span class="contact-option-label">WhatsApp</span>
+        </a>
+        <button class="contact-fab" id="contactFab" onclick="toggleContactFab()" title="Contact Us">
+            <span class="contact-fab-icon"><i class="fas fa-comment-dots"></i></span>
+        </button>
+    </div>
+    <script>
+        function toggleContactFab(){
+            const wrap=document.getElementById('contactFabWrap');
+            const btn=document.getElementById('contactFab');
+            wrap.classList.toggle('open');
+            btn.classList.toggle('open');
+        }
+        function closeContactFab(){
+            document.getElementById('contactFabWrap').classList.remove('open');
+            document.getElementById('contactFab').classList.remove('open');
+        }
+        document.addEventListener('click',e=>{
+            const wrap=document.getElementById('contactFabWrap');
+            if(wrap&&!wrap.contains(e.target))closeContactFab();
+        });
+        document.addEventListener('keydown',e=>{ if(e.key==='Escape')closeContactFab(); });
+    </script>
 </body>
 </html>
