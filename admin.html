@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebBuilder Pro — Admin</title>
-    <link rel="icon" href="https://img.icons8.com/fluency/96/000000/rocket.png">
+    <link rel="icon" href="rocket.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -468,6 +468,7 @@
                         <div class="drow"><span class="lbl">Base Price</span><span class="val" id="m-base">—</span></div>
                         <div class="drow"><span class="lbl">Add-ons</span><span class="val" id="m-addons">—</span></div>
                         <div class="drow"><span class="lbl">Maintenance</span><span class="val" id="m-maint">—</span></div>
+                        <div class="drow" id="m-domain-row" style="display:none;"><span class="lbl">Domain</span><span class="val" id="m-domain">—</span></div>
                         <div class="drow" style="border-top:2px solid var(--border);margin-top:6px;padding-top:10px">
                             <span class="lbl">Total</span>
                             <span class="val" id="m-total" style="font-size:1.1rem;color:var(--blue)">—</span>
@@ -707,7 +708,15 @@ function openModal(docId) {
     let ao = '—';
     if (o.add_ons?.length) ao = o.add_ons.map(a => (a.name||a) + ' (+€' + (a.price||'?') + ')').join(', ');
     document.getElementById('m-addons').textContent = ao;
-    document.getElementById('m-maint').textContent = o.maintenance_plan || '—';
+    const mNames = { maintenance_1:'1 Change (€8)', maintenance_5:'5 Changes (€25)', maintenance_12:'12 Changes (€50)',
+        simple_maintenance:'Simple Plan (legacy)', standard_maintenance:'Standard Plan (legacy)', premium_maintenance:'Premium Plan (legacy)' };
+    document.getElementById('m-maint').textContent = mNames[o.maintenance_plan] || o.maintenance_plan || '—';
+    if (o.domain_name) {
+        document.getElementById('m-domain-row').style.display = '';
+        document.getElementById('m-domain').textContent = o.domain_name;
+    } else {
+        document.getElementById('m-domain-row').style.display = 'none';
+    }
     document.getElementById('m-total').textContent = '€' + (o.total_price || o.package_price || '0');
 
     if (o.additional_notes) {
@@ -899,7 +908,7 @@ function enableDemoMode() {
             { _id:'d2', order_id:'WB-DEMO0002', customer_name:'Maria Ionescu', customer_email:'maria@coffeeshop.ro', customer_phone:'+40 754 321 987', service_type:'basic', package_price:80, total_price:80, status:'accepted', additional_notes:'', timestamp:new Date(Date.now()-86400000).toISOString(), messages:[] },
             { _id:'d3', order_id:'WB-DEMO0003', customer_name:'Alexandru Duma', customer_email:'alex@store.ro', customer_phone:'+40 766 456 789', service_type:'premium', package_price:550, total_price:597, status:'in_progress', payment_method:'paypal', payment_status:'completed', paid_amount:120, additional_notes:'Please add online booking.',
               timestamp:new Date(Date.now()-172800000).toISOString(),
-              messages:[{from:'client',text:'Do you need my logo files?',timestamp:new Date(Date.now()-90000000).toISOString(),author:'Alexandru'},{from:'admin',text:'Yes please send them to boghack18@gmail.com',timestamp:new Date(Date.now()-86000000).toISOString(),author:'WebBuilder Pro'}] },
+              messages:[{from:'client',text:'Do you need my logo files?',timestamp:new Date(Date.now()-90000000).toISOString(),author:'Alexandru'},{from:'admin',text:'Yes please send them to web.buider01@gmail.com',timestamp:new Date(Date.now()-86000000).toISOString(),author:'WebBuilder Pro'}] },
         ];
         applyFilters(); updateStats(); updateBadge();
     };
