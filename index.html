@@ -5097,6 +5097,15 @@ this.packageTabs.forEach(tab => {
             }
 
             openOrderForm(serviceType, price) {
+                // Hide the contact FAB so it doesn't overlap the order overlay
+                const fab = document.getElementById('contactFabWrap');
+                if (fab) {
+                    fab.style.transition = 'opacity 0.2s, transform 0.2s';
+                    fab.style.opacity = '0';
+                    fab.style.transform = 'scale(0.7)';
+                    fab.style.pointerEvents = 'none';
+                    setTimeout(() => { fab.style.display = 'none'; }, 220);
+                }
                 const serviceSelect = this.serviceSelect;
                 const packagePriceField = document.getElementById('package-price');
                 const addOnsField = document.getElementById('add-ons');
@@ -5163,6 +5172,16 @@ this.packageTabs.forEach(tab => {
             closeOrderForm() {
                 this.orderForm.classList.remove('active');
                 document.body.style.overflow = '';
+                // Restore the contact FAB
+                const fab = document.getElementById('contactFabWrap');
+                if (fab) {
+                    fab.style.display = '';
+                    setTimeout(() => {
+                        fab.style.opacity = '1';
+                        fab.style.transform = '';
+                        fab.style.pointerEvents = '';
+                    }, 10);
+                }
             }
 
             getPackageName(type) {
@@ -5424,7 +5443,7 @@ this.packageTabs.forEach(tab => {
                 }
                 
                 orderData.timestamp = new Date().toISOString();
-                orderData.order_id = 'WB-' + Date.now();
+                orderData.order_id = getNextWBId();
                 
                 let totalPrice = parseInt(orderData.package_price || 0);
                 
@@ -5519,6 +5538,42 @@ setTimeout(() => {
 
 return false;
             }
+        }
+
+        // ═══════════════════════════════════════
+        // ORDER ID GENERATOR — WB-0001a format
+        // Synced with Firestore _counters/orders for cross-device uniqueness
+        // ═══════════════════════════════════════
+        function getNextWBId() {
+            const COUNTER_KEY = 'wb_global_order_counter';
+            let counter = parseInt(localStorage.getItem(COUNTER_KEY) || '0') + 1;
+            localStorage.setItem(COUNTER_KEY, String(counter));
+
+            // Async-sync with Firestore so other devices use the right number
+            try {
+                if (typeof firebase !== 'undefined' && firebase.apps?.length) {
+                    const _db2 = firebase.firestore();
+                    const ref = _db2.collection('_counters').doc('orders');
+                    ref.get().then(snap => {
+                        const serverCount = snap.exists ? (snap.data().count || 0) : 0;
+                        const newCount = Math.max(counter, serverCount + 1);
+                        if (newCount > counter) {
+                            localStorage.setItem(COUNTER_KEY, String(newCount));
+                        }
+                        ref.set({ count: Math.max(newCount, serverCount + 1) }, { merge: true });
+                    }).catch(() => {});
+                }
+            } catch(e) {}
+
+            // Convert counter → WB-NNNNx
+            // Blocks of 9999: 1-9999=a, 10000-19998=b, …
+            // LCG scramble (×6271 mod 9999) makes sequential numbers look random
+            const BLOCK = 9999;
+            const blockIndex = Math.floor((counter - 1) / BLOCK);
+            const posInBlock = ((counter - 1) % BLOCK) + 1;
+            const suffix = String.fromCharCode(97 + (blockIndex % 26));
+            const scrambled = (posInBlock * 6271) % 9999 || 9999;
+            return 'WB-' + String(scrambled).padStart(4, '0') + suffix;
         }
 
         // Initialize everything when DOM is loaded
