@@ -5989,6 +5989,7 @@ return false;
     (function(){
     'use strict';
     let _db=null,_auth=null,_dmUser=null,_dmChatId=null,_dmUnsub=null,_dmReg=false;
+    // FIXED: use 'chats' collection (same as payment.html) so chat is unified and rules allow regular users
 
     function dmFirebase(){
         try{
@@ -6004,7 +6005,7 @@ return false;
     }
 
     function dmOnLogin(u){
-        _dmChatId='dm_'+u.uid;
+        _dmChatId=u.email.replace(/[^a-zA-Z0-9]/g,'_'); // FIXED: email-based chatId, same as chat.js
         // Show chat screen
         document.getElementById('wbp-msg-screen-auth').style.display='none';
         const cs=document.getElementById('wbp-msg-screen-chat');
@@ -6012,7 +6013,7 @@ return false;
         // Listen for messages
         if(_dmUnsub)_dmUnsub();
         if(_db){
-            _dmUnsub=_db.collection('direct_messages').doc(_dmChatId)
+            _dmUnsub=_db.collection('chats').doc(_dmChatId) // FIXED: use 'chats' collection
                 .onSnapshot(snap=>{
                     const data=snap.exists?snap.data():{};
                     dmRenderMessages(data.messages||[]);
@@ -6023,7 +6024,7 @@ return false;
                     // Mark as read when open
                     if(_panelOpen&&unread>0){
                         const updated=msgs.map(m=>m.from==='admin'?{...m,readByUser:true}:m);
-                        _db.collection('direct_messages').doc(_dmChatId).set({messages:updated,email:u.email,uid:u.uid,lastUpdated:new Date().toISOString()},{merge:true});
+                        _db.collection('chats').doc(_dmChatId).set({messages:updated,email:u.email,lastUpdated:new Date().toISOString()},{merge:true}); // FIXED: chats collection
                     }
                 });
         }
@@ -6064,12 +6065,12 @@ return false;
         btn.disabled=true; input.value='';
         const msg={from:'user',text,timestamp:new Date().toISOString(),author:_dmUser.email.split('@')[0]};
         try{
-            const ref=_db.collection('direct_messages').doc(_dmChatId);
+            const ref=_db.collection('chats').doc(_dmChatId); // FIXED: use 'chats' collection
             const snap=await ref.get();
             const existing=snap.exists?(snap.data().messages||[]):[];
             await ref.set({
                 messages:[...existing,msg],
-                email:_dmUser.email,uid:_dmUser.uid,
+                email:_dmUser.email,
                 lastMessage:text,
                 lastUpdated:new Date().toISOString(),
                 hasUnreadAdmin:true
