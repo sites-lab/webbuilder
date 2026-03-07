@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebBuilder Pro — Admin</title>
+    <title>WebBuilder — Admin</title>
     <link rel="icon" href="rocket.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -31,7 +31,7 @@
         @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
         .login-logo{text-align:center;margin-bottom:30px;}
         .login-logo .icon{width:60px;height:60px;background:var(--grad);border-radius:16px;display:inline-flex;align-items:center;justify-content:center;font-size:1.6rem;color:white;margin-bottom:14px;}
-        .login-logo h1{font-size:1.4rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .login-logo h1{font-size:1.4rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0;}
         .login-logo p{font-size:0.85rem;color:var(--mid);margin-top:4px;}
         .login-field{margin-bottom:16px;}
         .login-field label{display:block;font-size:0.8rem;font-weight:600;color:var(--dark2);margin-bottom:7px;text-transform:uppercase;letter-spacing:0.4px;}
@@ -225,36 +225,101 @@
         .toast.success i{color:var(--green);}
         .toast.error i{color:var(--red);}
 
-        /* ── MOBILE NAV ── */
-        .mobile-topbar{display:none;background:var(--dark);padding:14px 16px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;}
+        /* ── MOBILE TOP BAR ── */
+        .mobile-topbar{display:none;background:var(--dark);padding:13px 16px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;flex-shrink:0;}
         .mobile-brand{font-size:1rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:flex;align-items:center;gap:8px;}
-        .hamburger{width:36px;height:36px;border-radius:9px;border:none;background:rgba(255,255,255,0.08);color:#e2e8f0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all 0.2s;}
-        .hamburger:hover{background:rgba(255,255,255,0.15);}
-        .mobile-drawer{position:fixed;inset:0;z-index:300;display:none;}
+        .hamburger{display:none;}
+
+        /* ── MOBILE BOTTOM NAV ── */
+        .mobile-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--dark);border-top:1px solid rgba(255,255,255,0.08);z-index:400;padding:0;padding-bottom:env(safe-area-inset-bottom);}
+        .mobile-bottom-nav-inner{display:flex;align-items:stretch;}
+        .mbn-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;gap:4px;border:none;background:none;color:#64748b;font-family:'Inter',sans-serif;font-size:0.62rem;font-weight:600;cursor:pointer;transition:color 0.18s;position:relative;text-transform:uppercase;letter-spacing:0.3px;}
+        .mbn-tab i{font-size:1.1rem;}
+        .mbn-tab.active{color:var(--blue);}
+        .mbn-tab.active i{filter:drop-shadow(0 0 6px rgba(59,130,246,0.5));}
+        .mbn-badge{position:absolute;top:6px;right:calc(50% - 14px);background:var(--red);color:white;font-size:0.55rem;font-weight:800;min-width:16px;height:16px;border-radius:8px;display:none;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--dark);}
+        .mbn-badge.show{display:flex;}
+
+        /* ── MOBILE DRAWER (Settings panel) ── */
+        .mobile-drawer{position:fixed;inset:0;z-index:500;display:none;}
         .mobile-drawer.open{display:block;}
-        .drawer-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.55);}
-        .drawer-panel{position:absolute;left:0;top:0;bottom:0;width:260px;background:var(--dark);display:flex;flex-direction:column;overflow-y:auto;animation:slideDrawer 0.25s cubic-bezier(0.4,0,0.2,1);}
-        @keyframes slideDrawer{from{transform:translateX(-100%)}to{transform:translateX(0)}}
-        .drawer-close{position:absolute;top:14px;right:12px;width:30px;height:30px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:#94a3b8;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.85rem;}
+        .drawer-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(3px);}
+        .drawer-panel{position:absolute;bottom:0;left:0;right:0;background:var(--dark);border-radius:20px 20px 0 0;padding:20px;animation:slideDrawerUp 0.25s cubic-bezier(0.4,0,0.2,1);}
+        @keyframes slideDrawerUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+        .drawer-close{position:absolute;top:14px;right:16px;width:30px;height:30px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:#94a3b8;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.85rem;}
+        .drawer-handle{width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:0 auto 18px;}
+
+        /* ══ MESSAGES PAGE ══ */
+        .msg-list{display:flex;flex-direction:column;gap:10px;}
+        .msg-thread{background:white;border:1px solid var(--border);border-radius:14px;padding:16px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.18s;}
+        .msg-thread:hover{border-color:var(--blue);box-shadow:0 4px 16px rgba(59,130,246,0.1);transform:translateY(-1px);}
+        .msg-thread.unread{border-left:3px solid var(--blue);background:#fafbff;}
+        .msg-thread-av{width:42px;height:42px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:white;flex-shrink:0;}
+        .msg-thread-info{flex:1;min-width:0;}
+        .msg-thread-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;}
+        .msg-thread-name{font-weight:700;font-size:0.9rem;color:var(--dark2);}
+        .msg-thread-time{font-size:0.73rem;color:var(--mid);}
+        .msg-thread-preview{font-size:0.82rem;color:var(--mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .msg-thread.unread .msg-thread-preview{color:var(--dark2);font-weight:500;}
+        .msg-unread-dot{width:9px;height:9px;background:var(--blue);border-radius:50%;flex-shrink:0;}
+        .msg-detail{display:none;flex-direction:column;height:100%;}
+        .msg-detail.open{display:flex;}
+        .msg-detail-head{display:flex;align-items:center;gap:12px;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+        .msg-back-btn{width:32px;height:32px;border-radius:8px;border:none;background:var(--light);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--mid);font-size:0.85rem;transition:all 0.18s;flex-shrink:0;}
+        .msg-back-btn:hover{background:var(--border);}
+        .msg-detail-name{font-weight:800;font-size:1rem;}
+        .msg-detail-email{font-size:0.78rem;color:var(--mid);}
+        .msg-detail-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:4px 0;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+        .dm-msg{display:flex;gap:8px;align-items:flex-end;}
+        .dm-msg.admin-side{flex-direction:row-reverse;}
+        .dm-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:white;flex-shrink:0;}
+        .dm-msg.user-side .dm-av{background:linear-gradient(135deg,#10b981,#059669);}
+        .dm-msg.admin-side .dm-av{background:var(--grad);}
+        .dm-bub{max-width:74%;padding:9px 13px;border-radius:13px;font-size:0.84rem;line-height:1.5;}
+        .dm-msg.user-side .dm-bub{background:white;color:var(--dark2);border:1px solid var(--border);border-bottom-left-radius:3px;}
+        .dm-msg.admin-side .dm-bub{background:var(--grad);color:white;border-bottom-right-radius:3px;}
+        .dm-time{font-size:0.67rem;opacity:0.5;margin-top:2px;display:block;}
+        .dm-msg.admin-side .dm-time{text-align:right;}
+        .dm-no-msg{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--mid);padding:30px;text-align:center;}
+        .dm-no-msg i{font-size:2rem;opacity:0.25;}
+        .dm-input-row{display:flex;gap:10px;padding-top:14px;border-top:1px solid var(--border);margin-top:10px;}
+        .dm-input{flex:1;padding:10px 14px;border:2px solid var(--border);border-radius:10px;font-family:'Inter',sans-serif;font-size:0.875rem;color:var(--dark2);outline:none;transition:border-color 0.2s;}
+        .dm-input:focus{border-color:var(--blue);}
+        .dm-send-btn{width:42px;height:42px;background:var(--grad);border:none;border-radius:10px;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.9rem;transition:all 0.2s;flex-shrink:0;}
+        .dm-send-btn:hover{opacity:0.9;transform:scale(1.05);}
+        .dm-send-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+        .msgs-layout{display:grid;grid-template-columns:320px 1fr;gap:20px;height:calc(100vh - 200px);min-height:400px;}
+        .msgs-sidebar{background:white;border:1px solid var(--border);border-radius:14px;padding:16px;overflow-y:auto;}
+        .msgs-main{background:white;border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;flex-direction:column;}
+        .msgs-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--mid);gap:10px;}
+        .msgs-empty i{font-size:2.5rem;opacity:0.2;}
+        @media(max-width:768px){.msgs-layout{grid-template-columns:1fr;height:auto;}.msgs-main{min-height:400px;}}
 
         @media(max-width:1000px){.stats-row{grid-template-columns:repeat(2,1fr);}}
         @media(max-width:768px){
             .sidebar{display:none;}
             .mobile-topbar{display:flex;}
+            .mobile-bottom-nav{display:flex;}
+            #app.visible{flex-direction:column;}
+            .main{padding-bottom:70px;}
             .stats-row{grid-template-columns:1fr 1fr;}
-            .page{padding:14px;}
-            .topbar{padding:12px 14px;}
+            .page{padding:12px 12px 4px;}
+            .topbar{padding:10px 14px;}
             .topbar-right .btn span{display:none;}
             .modal-cols{grid-template-columns:1fr;}
-            .modal{max-width:100%;margin:0;border-radius:16px;}
+            .modal{max-width:100%;margin:0;border-radius:20px 20px 0 0;position:fixed;bottom:0;left:0;right:0;max-height:92vh;overflow-y:auto;}
+            .modal-bg{align-items:flex-end;padding:0;}
             table th:nth-child(6),table td:nth-child(6),
             table th:nth-child(7),table td:nth-child(7){display:none;}
+            .msgs-layout{grid-template-columns:1fr;gap:0;height:calc(100vh - 130px);}
+            .msgs-sidebar{border-radius:0;border:none;border-bottom:1px solid var(--border);max-height:220px;overflow-y:auto;}
+            .msgs-main{border-radius:0;border:none;flex:1;min-height:0;}
         }
         @media(max-width:500px){
-            .stats-row{grid-template-columns:1fr;}
+            .stats-row{grid-template-columns:1fr 1fr;}
             table th:nth-child(3),table td:nth-child(3),
             table th:nth-child(4),table td:nth-child(4){display:none;}
-            .topbar-left p{display:none;}
+            .topbar{display:none;}
         }
     </style>
 </head>
@@ -265,7 +330,7 @@
     <div class="login-card">
         <div class="login-logo">
             <div class="icon"><i class="fas fa-rocket"></i></div>
-            <h1>WebBuilder Pro</h1>
+            <h1>WebBuilder</h1>
             <p>Admin Dashboard — Sign in to continue</p>
         </div>
         <div class="login-field">
@@ -291,38 +356,52 @@
 
 <!-- MOBILE TOP BAR -->
 <div class="mobile-topbar" id="mobile-topbar" style="display:none">
-    <div class="mobile-brand"><i class="fas fa-rocket"></i> WebBuilder Pro</div>
-    <button class="hamburger" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
+    <div class="mobile-brand"><i class="fas fa-rocket"></i> WebBuilder</div>
+    <div class="admin-avatar" id="admin-avatar-topbar" style="width:30px;height:30px;font-size:0.75rem;">A</div>
 </div>
 
-<!-- MOBILE DRAWER -->
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav" style="display:none">
+    <div class="mobile-bottom-nav-inner">
+        <button class="mbn-tab active" id="mbn-orders" onclick="showPage('orders')">
+            <span class="mbn-badge" id="mbn-badge-orders">0</span>
+            <i class="fas fa-shopping-bag"></i>
+            Orders
+        </button>
+        <button class="mbn-tab" id="mbn-messages" onclick="showPage('messages')">
+            <span class="mbn-badge" id="mbn-badge-messages">0</span>
+            <i class="fas fa-comments"></i>
+            Messages
+        </button>
+        <button class="mbn-tab" id="mbn-more" onclick="openDrawer()">
+            <i class="fas fa-ellipsis-h"></i>
+            More
+        </button>
+    </div>
+</nav>
+
+<!-- MOBILE DRAWER (bottom sheet) -->
 <div class="mobile-drawer" id="mobile-drawer">
     <div class="drawer-overlay" onclick="closeDrawer()"></div>
     <div class="drawer-panel">
+        <div class="drawer-handle"></div>
         <button class="drawer-close" onclick="closeDrawer()"><i class="fas fa-times"></i></button>
-        <div class="sidebar-logo" style="padding-right:40px">
-            <div class="brand"><i class="fas fa-rocket"></i> WebBuilder Pro</div>
-            <div class="sub">Admin Panel</div>
+        <div style="margin-bottom:16px">
+            <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#475569;margin-bottom:10px">Quick Links</div>
+            <a class="nav-item" href="index.html" target="_blank" style="color:#94a3b8"><i class="fas fa-globe"></i> View Website</a>
+            <a class="nav-item" href="payment.html" target="_blank" style="color:#94a3b8"><i class="fas fa-credit-card"></i> Payment Page</a>
         </div>
-        <nav class="sidebar-nav">
-            <div class="nav-label">Management</div>
-            <button class="nav-item active" onclick="closeDrawer()">
-                <i class="fas fa-shopping-bag"></i> Orders
-                <span class="nav-badge" id="pending-badge-drawer" style="display:none">0</span>
-            </button>
-            <div class="nav-label" style="margin-top:8px">Site</div>
-            <a class="nav-item" href="index.html" target="_blank"><i class="fas fa-globe"></i> View Website</a>
-            <a class="nav-item" href="payment.html" target="_blank"><i class="fas fa-credit-card"></i> Payment Page</a>
-        </nav>
-        <div class="sidebar-bottom">
-            <div class="admin-tag">
+        <div style="border-top:1px solid rgba(255,255,255,0.07);padding-top:14px">
+            <div class="admin-tag" style="padding:0 0 12px">
                 <div class="admin-avatar" id="admin-avatar-drawer">A</div>
                 <div class="admin-info">
                     <div class="admin-name" id="admin-email-drawer">admin</div>
                     <div class="admin-role">Administrator</div>
                 </div>
-                <button class="logout-btn" title="Sign out" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i></button>
             </div>
+            <button class="nav-item" onclick="doLogout();closeDrawer();" style="color:#f87171;width:100%">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </button>
         </div>
     </div>
 </div>
@@ -331,7 +410,7 @@
 <div id="app">
     <aside class="sidebar">
         <div class="sidebar-logo">
-            <div class="brand"><i class="fas fa-rocket"></i> WebBuilder Pro</div>
+            <div class="brand"><i class="fas fa-rocket"></i> WebBuilder</div>
             <div class="sub">Admin Panel</div>
         </div>
         <nav class="sidebar-nav">
@@ -339,6 +418,10 @@
             <button class="nav-item active" id="nav-orders" onclick="showPage('orders')">
                 <i class="fas fa-shopping-bag"></i> Orders
                 <span class="nav-badge" id="pending-badge" style="display:none">0</span>
+            </button>
+            <button class="nav-item" id="nav-messages" onclick="showPage('messages')">
+                <i class="fas fa-comments"></i> Messages
+                <span class="nav-badge" id="msg-badge" style="display:none">0</span>
             </button>
             <div class="nav-label" style="margin-top:8px">Site</div>
             <a class="nav-item" href="index.html" target="_blank"><i class="fas fa-globe"></i> View Website</a>
@@ -438,6 +521,46 @@
                 </div>
             </div>
         </div>
+
+        <!-- MESSAGES PAGE -->
+        <div class="page" id="page-messages">
+            <div class="msgs-layout">
+                <!-- Thread list -->
+                <div class="msgs-sidebar">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                        <h3 style="font-size:0.95rem;font-weight:800;">Direct Messages</h3>
+                        <span style="font-size:0.75rem;color:var(--mid);" id="dm-thread-count">Loading...</span>
+                    </div>
+                    <div class="msg-list" id="dm-thread-list">
+                        <div style="text-align:center;padding:30px;color:var(--mid);font-size:0.85rem;"><i class="fas fa-circle-notch fa-spin"></i> Loading...</div>
+                    </div>
+                </div>
+                <!-- Chat detail -->
+                <div class="msgs-main">
+                    <div class="msgs-empty" id="dm-select-prompt">
+                        <i class="fas fa-comments"></i>
+                        <p style="font-weight:600;color:#64748b;">Select a conversation</p>
+                        <p style="font-size:0.8rem;">Click a message thread to read and reply</p>
+                    </div>
+                    <div class="msg-detail" id="dm-detail">
+                        <div class="msg-detail-head">
+                            <button class="msg-back-btn" onclick="dmDeselectThread()" title="Back"><i class="fas fa-arrow-left"></i></button>
+                            <div class="msg-thread-av" id="dm-detail-av">U</div>
+                            <div>
+                                <div class="msg-detail-name" id="dm-detail-name">User</div>
+                                <div class="msg-detail-email" id="dm-detail-email"></div>
+                            </div>
+                        </div>
+                        <div class="msg-detail-body" id="dm-detail-msgs"></div>
+                        <div class="dm-input-row">
+                            <input type="text" class="dm-input" id="dm-reply-input" placeholder="Reply..." onkeydown="if(event.key==='Enter')dmSendReply()" />
+                            <button class="dm-send-btn" id="dm-reply-btn" onclick="dmSendReply()"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -468,6 +591,7 @@
                         <div class="drow"><span class="lbl">Base Price</span><span class="val" id="m-base">—</span></div>
                         <div class="drow"><span class="lbl">Add-ons</span><span class="val" id="m-addons">—</span></div>
                         <div class="drow"><span class="lbl">Maintenance</span><span class="val" id="m-maint">—</span></div>
+                        <div class="drow" id="m-changes-row"><span class="lbl">Changes</span><span class="val" id="m-changes">—</span></div>
                         <div class="drow" id="m-domain-row" style="display:none;"><span class="lbl">Domain</span><span class="val" id="m-domain">—</span></div>
                         <div class="drow" style="border-top:2px solid var(--border);margin-top:6px;padding-top:10px">
                             <span class="lbl">Total</span>
@@ -561,7 +685,9 @@ function initFirebase() {
                 document.getElementById('admin-avatar').textContent = (user.email || 'A').charAt(0).toUpperCase();
                 document.getElementById('admin-email-drawer').textContent = user.email || '';
                 document.getElementById('admin-avatar-drawer').textContent = (user.email || 'A').charAt(0).toUpperCase();
+                document.getElementById('admin-avatar-topbar').textContent = (user.email || 'A').charAt(0).toUpperCase();
                 document.getElementById('mobile-topbar').style.display = 'flex';
+                document.getElementById('mobile-bottom-nav').style.display = 'flex';
                 startListening();
             } else {
                 document.getElementById('login-screen').style.display = 'flex';
@@ -631,8 +757,8 @@ function updateBadge() {
     const p = allOrders.filter(o => !o.status || o.status==='pending').length;
     const b = document.getElementById('pending-badge');
     b.textContent = p; b.style.display = p > 0 ? 'inline' : 'none';
-    const bd = document.getElementById('pending-badge-drawer');
-    bd.textContent = p; bd.style.display = p > 0 ? 'inline' : 'none';
+    const mbnB = document.getElementById('mbn-badge-orders');
+    if(mbnB){mbnB.textContent=p;mbnB.classList.toggle('show',p>0);}
 }
 
 // ═══════════════════════════════════════
@@ -708,9 +834,19 @@ function openModal(docId) {
     let ao = '—';
     if (o.add_ons?.length) ao = o.add_ons.map(a => (a.name||a) + ' (+€' + (a.price||'?') + ')').join(', ');
     document.getElementById('m-addons').textContent = ao;
-    const mNames = { maintenance_1:'1 Change (€8)', maintenance_5:'5 Changes (€25)', maintenance_12:'12 Changes (€50)',
-        simple_maintenance:'Simple Plan (legacy)', standard_maintenance:'Standard Plan (legacy)', premium_maintenance:'Premium Plan (legacy)' };
-    document.getElementById('m-maint').textContent = mNames[o.maintenance_plan] || o.maintenance_plan || '—';
+    document.getElementById('m-maint').textContent = o.maintenance_plan || '—';
+
+    // Changes
+    const changesCount = parseInt(o.changes_count || 0);
+    const changesCost = parseInt(o.changes_cost || 0);
+    const changesEl = document.getElementById('m-changes');
+    if (changesCount > 0) {
+        const isFree = changesCost === 0;
+        const rateLabel = o.changes_price_per_unit || 3;
+        changesEl.innerHTML = `<strong>${changesCount} change${changesCount !== 1 ? 's' : ''}</strong> &mdash; ${isFree ? '<span style="color:var(--green);font-weight:700">Free (Basic plan)</span>' : '<span style="color:var(--blue)">€' + changesCost + ' (€' + rateLabel + ' each)</span>'}`;
+    } else {
+        changesEl.textContent = '—';
+    }
     if (o.domain_name) {
         document.getElementById('m-domain-row').style.display = '';
         document.getElementById('m-domain').textContent = o.domain_name;
@@ -847,7 +983,7 @@ async function sendAdminMessage() {
         from: 'admin',
         text,
         timestamp: new Date().toISOString(),
-        author: 'WebBuilder Pro'
+        author: 'WebBuilder'
     };
 
     try {
@@ -874,10 +1010,11 @@ async function sendAdminMessage() {
 // ═══════════════════════════════════════
 function exportCSV() {
     if (allOrders.length === 0) { toast('No orders to export', true); return; }
-    const h = ['Order ID','Name','Email','Phone','Package','Total','Status','Messages','Date'];
+    const h = ['Order ID','Name','Email','Phone','Package','Total','Changes','Changes Cost','Status','Messages','Date'];
     const rows = allOrders.map(o => [
         o.order_id||'', o.customer_name||'', o.customer_email||'', o.customer_phone||'',
         pkgLabel(o.service_type), o.total_price||o.package_price||'0',
+        o.changes_count||0, o.changes_cost||0,
         o.status||'pending', (o.messages||[]).length, fmtDate(o.timestamp,true)
     ].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','));
     const csv = [h.join(','),...rows].join('\n');
@@ -901,14 +1038,16 @@ function enableDemoMode() {
         document.getElementById('admin-avatar').textContent = e.charAt(0).toUpperCase();
         document.getElementById('admin-email-drawer').textContent = e;
         document.getElementById('admin-avatar-drawer').textContent = e.charAt(0).toUpperCase();
+        document.getElementById('admin-avatar-topbar').textContent = e.charAt(0).toUpperCase();
         document.getElementById('mobile-topbar').style.display = 'flex';
+        document.getElementById('mobile-bottom-nav').style.display = 'flex';
         allOrders = [
-            { _id:'d1', order_id:'WB-DEMO0001', customer_name:'Ion Popescu', customer_email:'ion@example.com', customer_phone:'+40 729 000 111', service_type:'standard', package_price:300, total_price:324, status:'pending', additional_notes:'I need the site in Romanian and English. Can you add Google Maps integration?', timestamp:new Date(Date.now()-3600000).toISOString(),
+            { _id:'d1', order_id:'WB-DEMO0001', customer_name:'Ion Popescu', customer_email:'ion@example.com', customer_phone:'+40 729 000 111', service_type:'standard', package_price:250, total_price:274, status:'pending', additional_notes:'I need the site in Romanian and English. Can you add Google Maps integration?', timestamp:new Date(Date.now()-3600000).toISOString(),
               messages:[{from:'client',text:'Hello! When can you start?',timestamp:new Date(Date.now()-1800000).toISOString(),author:'Ion Popescu'}] },
-            { _id:'d2', order_id:'WB-DEMO0002', customer_name:'Maria Ionescu', customer_email:'maria@coffeeshop.ro', customer_phone:'+40 754 321 987', service_type:'basic', package_price:80, total_price:80, status:'accepted', additional_notes:'', timestamp:new Date(Date.now()-86400000).toISOString(), messages:[] },
+            { _id:'d2', order_id:'WB-DEMO0002', customer_name:'Maria Ionescu', customer_email:'maria@coffeeshop.ro', customer_phone:'+40 754 321 987', service_type:'basic', package_price:40, total_price:40, status:'accepted', additional_notes:'', timestamp:new Date(Date.now()-86400000).toISOString(), messages:[] },
             { _id:'d3', order_id:'WB-DEMO0003', customer_name:'Alexandru Duma', customer_email:'alex@store.ro', customer_phone:'+40 766 456 789', service_type:'premium', package_price:550, total_price:597, status:'in_progress', payment_method:'paypal', payment_status:'completed', paid_amount:120, additional_notes:'Please add online booking.',
               timestamp:new Date(Date.now()-172800000).toISOString(),
-              messages:[{from:'client',text:'Do you need my logo files?',timestamp:new Date(Date.now()-90000000).toISOString(),author:'Alexandru'},{from:'admin',text:'Yes please send them to web.buider01@gmail.com',timestamp:new Date(Date.now()-86000000).toISOString(),author:'WebBuilder Pro'}] },
+              messages:[{from:'client',text:'Do you need my logo files?',timestamp:new Date(Date.now()-90000000).toISOString(),author:'Alexandru'},{from:'admin',text:'Yes please send them to web.builder01@gmail.com',timestamp:new Date(Date.now()-86000000).toISOString(),author:'WebBuilder Pro'}] },
         ];
         applyFilters(); updateStats(); updateBadge();
     };
@@ -955,7 +1094,159 @@ function showPage(name) {
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
     document.getElementById('page-'+name)?.classList.add('active');
     document.getElementById('nav-'+name)?.classList.add('active');
+    // Update topbar title
+    const titles={orders:{h:'Orders',p:'All customer orders — updates in real-time'},messages:{h:'Messages',p:'Direct messages from website visitors'}};
+    const t=titles[name]||titles.orders;
+    document.querySelector('.topbar-left h2').textContent=t.h;
+    document.querySelector('.topbar-left p').textContent=t.p;
+    // Show/hide topbar action buttons
+    document.querySelector('.topbar-right').style.display=name==='orders'?'flex':'none';
+    // Update mobile bottom nav active tab
+    document.querySelectorAll('.mbn-tab').forEach(tab=>tab.classList.remove('active'));
+    const activeTab=document.getElementById('mbn-'+name);
+    if(activeTab)activeTab.classList.add('active');
+    if(name==='messages')dmStartListening();
 }
+
+// ═══════════════════════════════════════
+// DIRECT MESSAGES
+// ═══════════════════════════════════════
+let dmThreads=[], dmSelectedId=null, dmUnsub=null;
+
+function dmStartListening(){
+    if(!db||dmUnsub)return;
+    dmUnsub=db.collection('direct_messages')
+        .orderBy('lastUpdated','desc')
+        .onSnapshot(snap=>{
+            dmThreads=snap.docs.map(d=>({_id:d.id,...d.data()}));
+            dmRenderThreadList();
+            // If a thread is open, refresh it
+            if(dmSelectedId){
+                const t=dmThreads.find(t=>t._id===dmSelectedId);
+                if(t)dmShowThread(t);
+            }
+            // Update badge
+            const unread=dmThreads.filter(t=>t.hasUnreadAdmin).length;
+            const msgBadge=document.getElementById('msg-badge');
+            if(msgBadge){msgBadge.textContent=unread;msgBadge.style.display=unread>0?'':'none';}
+            const mbnBm=document.getElementById('mbn-badge-messages');
+            if(mbnBm){mbnBm.textContent=unread;mbnBm.classList.toggle('show',unread>0);}
+        });
+}
+
+function dmRenderThreadList(){
+    const list=document.getElementById('dm-thread-list');
+    const count=document.getElementById('dm-thread-count');
+    count.textContent=dmThreads.length+' conversation'+(dmThreads.length!==1?'s':'');
+    if(dmThreads.length===0){
+        list.innerHTML='<div style="text-align:center;padding:40px;color:var(--mid);font-size:0.85rem;"><i class="fas fa-inbox" style="font-size:2rem;opacity:0.2;display:block;margin-bottom:10px;"></i>No messages yet</div>';
+        return;
+    }
+    list.innerHTML='';
+    dmThreads.forEach(t=>{
+        const unread=t.hasUnreadAdmin;
+        const lastMsg=t.lastMessage||'No messages';
+        const email=t.email||'Unknown';
+        const name=email.split('@')[0];
+        const initial=name.charAt(0).toUpperCase();
+        const time=t.lastUpdated?fmtDmTime(t.lastUpdated):'';
+        const div=document.createElement('div');
+        div.className='msg-thread'+(unread?' unread':'')+(dmSelectedId===t._id?' active':'');
+        div.style.cssText+=dmSelectedId===t._id?'border-color:var(--blue);background:#f0f7ff;':'';
+        div.onclick=()=>dmSelectThread(t._id);
+        div.innerHTML=`
+            <div class="msg-thread-av">${dmEsc(initial)}</div>
+            <div class="msg-thread-info">
+                <div class="msg-thread-top">
+                    <span class="msg-thread-name">${dmEsc(name)}</span>
+                    <span class="msg-thread-time">${time}</span>
+                </div>
+                <div class="msg-thread-preview">${dmEsc(lastMsg)}</div>
+            </div>
+            ${unread?'<div class="msg-unread-dot"></div>':''}`;  
+        list.appendChild(div);
+    });
+}
+
+function dmSelectThread(id){
+    dmSelectedId=id;
+    const t=dmThreads.find(x=>x._id===id);
+    if(!t)return;
+    dmShowThread(t);
+    dmRenderThreadList();
+    // Mark as read
+    if(db&&t.hasUnreadAdmin){
+        db.collection('direct_messages').doc(id).update({hasUnreadAdmin:false}).catch(()=>{});
+    }
+}
+
+function dmShowThread(t){
+    document.getElementById('dm-select-prompt').style.display='none';
+    const detail=document.getElementById('dm-detail');
+    detail.classList.add('open');
+    const name=(t.email||'user').split('@')[0];
+    document.getElementById('dm-detail-av').textContent=name.charAt(0).toUpperCase();
+    document.getElementById('dm-detail-name').textContent=name;
+    document.getElementById('dm-detail-email').textContent=t.email||'';
+    // Render messages
+    const body=document.getElementById('dm-detail-msgs');
+    const msgs=t.messages||[];
+    body.innerHTML='';
+    if(msgs.length===0){
+        body.innerHTML='<div class="dm-no-msg"><i class="fas fa-comment-dots"></i><p>No messages yet</p></div>';
+    } else {
+        msgs.forEach(m=>{
+            const isUser=m.from==='user';
+            const time=m.timestamp?new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';
+            const initial=isUser?name.charAt(0).toUpperCase():'A';
+            const div=document.createElement('div');
+            div.className='dm-msg '+(isUser?'user-side':'admin-side');
+            div.innerHTML=`<div class="dm-av">${dmEsc(initial)}</div><div><div class="dm-bub">${dmEsc(m.text)}<span class="dm-time">${time}</span></div></div>`;
+            body.appendChild(div);
+        });
+    }
+    body.scrollTop=body.scrollHeight;
+    setTimeout(()=>document.getElementById('dm-reply-input')?.focus(),100);
+}
+
+function dmDeselectThread(){
+    dmSelectedId=null;
+    document.getElementById('dm-select-prompt').style.display='flex';
+    document.getElementById('dm-detail').classList.remove('open');
+    dmRenderThreadList();
+}
+
+async function dmSendReply(){
+    if(!dmSelectedId||!db)return;
+    const input=document.getElementById('dm-reply-input');
+    const text=input.value.trim();
+    if(!text)return;
+    const btn=document.getElementById('dm-reply-btn');
+    btn.disabled=true; input.value='';
+    const msg={from:'admin',text,timestamp:new Date().toISOString(),author:'WebBuilder'};
+    try{
+        const t=dmThreads.find(x=>x._id===dmSelectedId);
+        const existing=t?.messages||[];
+        await db.collection('direct_messages').doc(dmSelectedId).update({
+            messages:[...existing,msg],
+            lastMessage:'You: '+text,
+            lastUpdated:new Date().toISOString(),
+            hasUnreadAdmin:false
+        });
+    }catch(e){toast('Send error: '+e.message,true);}
+    finally{btn.disabled=false;document.getElementById('dm-reply-input').focus();}
+}
+
+function fmtDmTime(iso){
+    const d=new Date(iso);
+    const now=new Date();
+    const diff=now-d;
+    if(diff<60000)return'now';
+    if(diff<3600000)return Math.floor(diff/60000)+'m ago';
+    if(diff<86400000)return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    return d.toLocaleDateString([],{month:'short',day:'numeric'});
+}
+function dmEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 // ═══════════════════════════════════════
 // BOOT
