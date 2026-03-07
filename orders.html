@@ -4,7 +4,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <!-- Critical: block content flash before loading screen paints (fixes Telegram WebView) -->
+    <style>body{opacity:0;overflow:hidden;}</style>
     <title>WebBuilder - My Orders</title>
     <link rel="icon" href="rocket.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -140,13 +142,16 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
+            background-color: #000005;
             background: radial-gradient(ellipse at 20% 30%, #0d1b4b 0%, #060c1f 40%, #000005 100%);
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
+            z-index: 2147483647;
             transition: opacity 0.8s ease;
             overflow: hidden;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
         }
 
         /* Deep cosmos nebula layers */
@@ -218,9 +223,11 @@
         }
 
         .loading-rocket {
-            font-size: 5.5rem;
+            width: 110px;
+            height: 110px;
             display: block;
-            margin: 0 auto 0;
+            margin: 0 auto;
+            object-fit: contain;
             transform: rotate(-45deg);
             animation: launchRocket 2.2s ease-in-out infinite;
             filter: drop-shadow(0 0 18px rgba(120,80,255,0.9)) drop-shadow(0 0 40px rgba(80,40,200,0.5));
@@ -363,7 +370,7 @@
                 <div class="lp lp3"></div><div class="lp lp4"></div>
                 <div class="lp lp5"></div>
             </div>
-            <span class="loading-rocket">🚀</span>
+            <img class="loading-rocket" src="rocket_nobg.png" alt="rocket">
             <span class="loading-flame"></span>
         </div>
             <div class="loading-brand">WebBuilder</div>
@@ -840,7 +847,9 @@ async function executeDeleteOrder(orderId, firestoreId) {
 function hideLoading() {
     const ls = document.getElementById('loading-screen');
     ls.style.opacity = '0';
-    setTimeout(() => ls.style.display = 'none', 500);
+    document.body.style.opacity = '1';
+    document.body.style.overflow = '';
+    setTimeout(() => ls.style.display = 'none', 800);
 }
 
 // ═══════════════════════════════════════
