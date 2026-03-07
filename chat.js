@@ -207,6 +207,22 @@ async function doLogout() {
     if (_auth) await _auth.signOut();
 }
 
+async function doResetPassword() {
+    const email = document.getElementById('wbp-email').value.trim();
+    const err = document.getElementById('wbp-auth-err');
+    const ok = document.getElementById('wbp-reset-ok');
+    if (!email) { showAuthError(t('invalidEmail')); return; }
+    if (!_auth) { showAuthError(t('error')); return; }
+    err.style.display = 'none';
+    if (ok) ok.style.display = 'none';
+    try {
+        await _auth.sendPasswordResetEmail(email);
+        if (ok) ok.style.display = 'block';
+    } catch(e) {
+        showAuthError(t('error'));
+    }
+}
+
 function showAuthError(msg) {
     const el = document.getElementById('wbp-auth-err');
     if (el) { el.textContent = msg; el.style.display = 'block'; }
@@ -313,6 +329,9 @@ function buildUI() {
         .wbp-switch { text-align: center; margin-top: 14px; font-size: 0.8rem; color: #64748b; }
         .wbp-switch a { color: #3b82f6; font-weight: 600; cursor: pointer; text-decoration: none; }
         .wbp-switch a:hover { text-decoration: underline; }
+        .wbp-reset-link { text-align: center; margin-top: 8px; font-size: 0.76rem; color: #94a3b8; }
+        .wbp-reset-link a { color: #3b82f6; cursor: pointer; text-decoration: underline; }
+        .wbp-reset-ok { background: #ecfdf5; color: #065f46; padding: 8px 12px; border-radius: 8px; font-size: 0.78rem; margin-top: 8px; display: none; text-align: center; }
 
         /* CHAT SCREEN */
         .wbp-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; scrollbar-width: thin; scrollbar-color: #e2e8f0 transparent; }
@@ -371,9 +390,12 @@ function buildUI() {
         .wbp-done-banner h4 { font-size: 0.9rem; font-weight: 800; margin-bottom: 4px; }
         .wbp-done-banner p { font-size: 0.78rem; opacity: 0.9; margin: 0; }
 
+        @media (max-width: 768px) {
+            #wbp-bubble { width: 72px; height: 72px; font-size: 1.65rem; }
+        }
         @media (max-width: 420px) {
             #wbp-panel { width: calc(100vw - 24px); right: 12px; bottom: 90px; }
-            #wbp-bubble { right: 16px; bottom: 20px; }
+            #wbp-bubble { right: 16px; bottom: 20px; width: 72px; height: 72px; font-size: 1.65rem; }
         }
     `;
     document.head.appendChild(style);
@@ -430,6 +452,8 @@ function buildUI() {
                         </div>
                         <button class="wbp-auth-btn" id="wbp-login-btn" onclick="wbpAuthAction()">Sign In</button>
                         <div class="wbp-auth-err" id="wbp-auth-err"></div>
+                        <div class="wbp-reset-link"><a onclick="wbpResetPassword()">Forgot password?</a></div>
+                        <div class="wbp-reset-ok" id="wbp-reset-ok">✅ Reset email sent! Check your inbox.</div>
                         <div class="wbp-switch">
                             <span id="wbp-switch-text">Don't have an account?</span>
                             <a onclick="wbpToggleRegister()" id="wbp-switch-link">Create Account</a>
@@ -752,6 +776,7 @@ window.wbpToggleRegister = wbpToggleRegister;
 window.wbpAuthAction = wbpAuthAction;
 window.wbpLogout = wbpLogout;
 window.wbpSendMessage = wbpSendMessage;
+window.wbpResetPassword = doResetPassword;
 
 // ═══════════════════════════════════════════
 // BOOT
