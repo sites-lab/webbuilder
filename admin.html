@@ -1197,7 +1197,7 @@ let dmThreads=[], dmSelectedId=null, dmUnsub=null;
 
 function dmStartListening(){
     if(!db||dmUnsub)return;
-    dmUnsub=db.collection('direct_messages')
+    dmUnsub=db.collection('chats')
         .orderBy('lastUpdated','desc')
         .onSnapshot(snap=>{
             dmThreads=snap.docs.map(d=>({_id:d.id,...d.data()}));
@@ -1258,7 +1258,7 @@ function dmSelectThread(id){
     dmRenderThreadList();
     // Mark as read
     if(db&&t.hasUnreadAdmin){
-        db.collection('direct_messages').doc(id).update({hasUnreadAdmin:false}).catch(()=>{});
+        db.collection('chats').doc(id).update({hasUnreadAdmin:false}).catch(()=>{});
     }
 }
 
@@ -1309,7 +1309,7 @@ async function dmSendReply(){
     try{
         const t=dmThreads.find(x=>x._id===dmSelectedId);
         const existing=t?.messages||[];
-        await db.collection('direct_messages').doc(dmSelectedId).update({
+        await db.collection('chats').doc(dmSelectedId).update({
             messages:[...existing,msg],
             lastMessage:'You: '+text,
             lastUpdated:new Date().toISOString(),
