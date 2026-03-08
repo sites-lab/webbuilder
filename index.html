@@ -67,24 +67,37 @@
             pointer-events: none;
         }
 
-        /* Shooting star streak */
+        /* Orbiting pulse rings around the loading content */
         #loading-screen::after {
             content: '';
             position: absolute;
-            top: 18%;
-            left: -10%;
-            width: 200px;
-            height: 1.5px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
-            transform: rotate(-20deg);
-            animation: shootingStar 4s linear infinite;
+            top: 50%;
+            left: 50%;
+            width: 260px;
+            height: 260px;
+            margin: -130px 0 0 -130px;
+            border-radius: 50%;
+            border: 1px solid rgba(160,100,255,0.18);
+            animation: orbitRing 3.5s ease-in-out infinite;
             pointer-events: none;
         }
-        @keyframes shootingStar {
-            0%   { left: -20%; opacity: 0; }
-            10%  { opacity: 1; }
-            80%  { opacity: 1; }
-            100% { left: 110%; opacity: 0; }
+        @keyframes orbitRing {
+            0%   { transform: scale(0.6); opacity: 0; }
+            30%  { opacity: 0.7; }
+            100% { transform: scale(2.2); opacity: 0; }
+        }
+        /* Second staggered ring */
+        .loading-content::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 320px; height: 320px;
+            margin: -160px 0 0 -160px;
+            border-radius: 50%;
+            border: 1px solid rgba(100,140,255,0.12);
+            animation: orbitRing 3.5s ease-in-out 1.4s infinite;
+            pointer-events: none;
+            z-index: 0;
         }
 
         .loading-content {
@@ -2210,10 +2223,12 @@
         }
 
         .social-links a:hover {
-            background: var(--gradient-primary);
+            background: rgba(255,255,255,0.18);
             transform: translateY(-4px) scale(1.1);
             box-shadow: var(--shadow-lg);
         }
+        .social-links a i { font-size: 1.15rem; color: rgba(255,255,255,0.85); transition: color 0.2s; }
+        .social-links a:hover i { color: white; }
 
         .copyright {
             text-align: center;
@@ -3205,13 +3220,14 @@
             </div>
             
             <div class="mobile-social-links">
-                <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-                <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+                <a href="https://www.instagram.com/yourwebbu1lder/" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                <a href="https://t.me/LoveBomboclaut" target="_blank" rel="noopener"><i class="fab fa-telegram-plane"></i></a>
+                <a href="https://wa.me/40729552767" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
             </div>
             
             <div class="mobile-contact-info">
                 <p><i class="fas fa-phone"></i> +40 729 552 767</p>
-                <p><i class="fas fa-envelope"></i> <a href="mailto:web.builder01@gmail.com" style="color:inherit;">web.builder01@gmail.com</a></p>
+                <p><i class="fas fa-envelope"></i> <a href="/cdn-cgi/l/email-protection#b5c2d0d79bd7c0dcd9d1d0c78584f5d2d8d4dcd99bd6dad8" style="color:inherit;"><span class="__cf_email__" data-cfemail="334456511d51465a5f575641030273545e525a5f1d505c5e">[email&#160;protected]</span></a></p>
             </div>
         </div>
     </div>
@@ -3400,7 +3416,7 @@
         <div class="bg-rocket bg-rocket-6"></div>
         <div class="bg-rocket bg-rocket-7"></div>
 
-        <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         (function(){
           var tpl = document.getElementById('tpl-rocket');
           if (!tpl) return;
@@ -3930,8 +3946,9 @@
                     <h3>WebBuilder</h3>
                     <p data-i18n="footer.description">We provide complete web solutions for small and medium businesses, with emphasis on quality and results.</p>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="https://www.instagram.com/yourwebbu1lder/" target="_blank" rel="noopener" title="Instagram" style="color:#e1306c"><i class="fab fa-instagram"></i></a>
+                        <a href="https://wa.me/40729552767" target="_blank" rel="noopener" title="WhatsApp" style="color:#25d366"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://t.me/LoveBomboclaut" target="_blank" rel="noopener" title="Telegram" style="color:#2aabee"><i class="fab fa-telegram-plane"></i></a>
                     </div>
                 </div>
                 <div class="footer-column">
@@ -3949,7 +3966,7 @@
                     <h3 data-i18n="footer.contact">Contact</h3>
                     <ul>
                         <li><i class="fas fa-phone"></i> +40 729 552 767</li>
-                        <li><i class="fas fa-envelope"></i> <a href="mailto:web.builder01@gmail.com" style="color:inherit;">web.builder01@gmail.com</a></li>
+                        <li><i class="fas fa-envelope"></i> <a href="/cdn-cgi/l/email-protection#077062652965726e6b636275373647606a666e6b2964686a" style="color:inherit;"><span class="__cf_email__" data-cfemail="d9aebcbbf7bbacb0b5bdbcabe9e899beb4b8b0b5f7bab6b4">[email&#160;protected]</span></a></li>
                         <li><i class="fas fa-map-marker-alt"></i> <span data-i18n="footer.location">Bucharest, Romania</span></li>
                     </ul>
                 </div>
@@ -4098,7 +4115,7 @@
 
 
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // Enhanced Mobile Menu System
         class EnhancedMobileMenu {
             constructor() {
@@ -4563,7 +4580,22 @@ this.packageTabs.forEach(tab => {
                         "order.summary": "Sumar Comandă",
                         "order.total": "Total:",
                         "order.submit": "Trimite Comanda",
-                        "order.note": "Veți fi redirecționat către plată securizată după trimitere"
+                        "order.note": "Veți fi redirecționat către plată securizată după trimitere",
+                        "chat.hello": "Spune salut 👋",
+                        "chat.signin_sub": "Autentifică-te pentru a discuta cu noi",
+                        "chat.signup_title": "Creează cont",
+                        "chat.signup_sub": "Creează un cont gratuit pentru a discuta cu noi",
+                        "chat.signin_btn": "Autentificare",
+                        "chat.signup_btn": "Creează cont",
+                        "chat.forgot": "Ai uitat parola?",
+                        "chat.reset_ok": "✅ Email de resetare trimis! Verifică inbox-ul.",
+                        "chat.no_account": "Nu ai cont?",
+                        "chat.create_one": "Creează unul",
+                        "chat.has_account": "Ai deja un cont?",
+                        "chat.online": "De obicei răspunde în câteva ore",
+                        "chat.no_messages": "Niciun mesaj",
+                        "chat.no_messages_sub": "Trimite-ne un mesaj și răspundem curând!",
+                        "chat.placeholder": "Scrie un mesaj..."
                     },
                     en: {
                         "nav.home": "Home",
@@ -4699,7 +4731,22 @@ this.packageTabs.forEach(tab => {
                         "order.summary": "Order Summary",
                         "order.total": "Total:",
                         "order.submit": "Submit Order",
-                        "order.note": "You'll be redirected to secure payment after submitting"
+                        "order.note": "You'll be redirected to secure payment after submitting",
+                        "chat.hello": "Say hello 👋",
+                        "chat.signin_sub": "Sign in to chat with us",
+                        "chat.signup_title": "Create account",
+                        "chat.signup_sub": "Create a free account to chat with us",
+                        "chat.signin_btn": "Sign In",
+                        "chat.signup_btn": "Create Account",
+                        "chat.forgot": "Forgot password?",
+                        "chat.reset_ok": "✅ Reset email sent! Check your inbox.",
+                        "chat.no_account": "Don't have an account?",
+                        "chat.create_one": "Create one",
+                        "chat.has_account": "Already have an account?",
+                        "chat.online": "Usually replies in a few hours",
+                        "chat.no_messages": "No messages yet",
+                        "chat.no_messages_sub": "Send us a message and we'll reply soon!",
+                        "chat.placeholder": "Type a message..."
                     },
                     ru: {
                         "nav.home": "Главная",
@@ -4835,7 +4882,22 @@ this.packageTabs.forEach(tab => {
                         "order.summary": "Сводка Заказа",
                         "order.total": "Всего:",
                         "order.submit": "Отправить Заказ",
-                        "order.note": "Вы будете перенаправлены на безопасную оплату после отправки"
+                        "order.note": "Вы будете перенаправлены на безопасную оплату после отправки",
+                        "chat.hello": "Привет 👋",
+                        "chat.signin_sub": "Войдите, чтобы начать чат",
+                        "chat.signup_title": "Создать аккаунт",
+                        "chat.signup_sub": "Создайте бесплатный аккаунт для чата",
+                        "chat.signin_btn": "Войти",
+                        "chat.signup_btn": "Создать аккаунт",
+                        "chat.forgot": "Забыли пароль?",
+                        "chat.reset_ok": "✅ Письмо для сброса отправлено!",
+                        "chat.no_account": "Нет аккаунта?",
+                        "chat.create_one": "Создать",
+                        "chat.has_account": "Уже есть аккаунт?",
+                        "chat.online": "Обычно отвечает в течение нескольких часов",
+                        "chat.no_messages": "Нет сообщений",
+                        "chat.no_messages_sub": "Отправьте сообщение — ответим в ближайшее время!",
+                        "chat.placeholder": "Введите сообщение..."
                     }
                 };
                 
@@ -4924,7 +4986,14 @@ this.packageTabs.forEach(tab => {
 
                 localStorage.setItem('preferred-language', lang);
                 document.documentElement.lang = lang;
-                
+                window._langSys = this;
+                // Update chat panel language
+                if(typeof wbpMsgUpdateLangUI === 'function') wbpMsgUpdateLangUI();
+                // Handle placeholder i18n
+                document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+                    const k=el.getAttribute('data-i18n-placeholder');
+                    if(this.translations[lang]&&this.translations[lang][k])el.placeholder=this.translations[lang][k];
+                });
                 // Update mobile example buttons text
                 this.updateMobileExampleButtons(lang);
             }
@@ -5826,9 +5895,9 @@ return false;
         .wbp-direct-bub { max-width:80%; padding:8px 12px 6px; border-radius:12px; font-family:'Inter',sans-serif; font-size:0.82rem; line-height:1.5; display:inline-block; }
         .wbp-direct-msg.theirs .wbp-direct-bub { background:white; color:#1e293b; border:1px solid #e2e8f0; border-bottom-left-radius:3px; }
         .wbp-direct-msg.mine .wbp-direct-bub { background:linear-gradient(135deg,#3b82f6,#8b5cf6); color:white; border-bottom-right-radius:3px; }
-        .wbp-direct-bub-inner { display:block; overflow:hidden; }
-        .wbp-direct-text { display:block; word-break:break-word; white-space:pre-wrap; }
-        .wbp-direct-time { font-size:0.62rem; opacity:0.55; white-space:nowrap; float:right; margin-left:8px; margin-top:2px; padding-left:4px; position:relative; bottom:-1px; }
+        .wbp-direct-bub-inner { display:block; }
+        .wbp-direct-text { display:inline; word-break:break-word; white-space:normal; }
+        .wbp-direct-time { font-size:0.62rem; opacity:0.55; white-space:nowrap; line-height:1; float:right; margin-left:6px; margin-top:4px; position:relative; bottom:-1px; }
         .wbp-msg-auth { padding:16px; background:white; }
         .wbp-msg-auth h5 { font-family:'Inter',sans-serif; font-size:0.88rem; font-weight:700; margin:0 0 4px; color:#1e293b; }
         .wbp-msg-auth p { font-family:'Inter',sans-serif; font-size:0.75rem; color:#64748b; margin:0 0 12px; }
@@ -5876,23 +5945,23 @@ return false;
             <div class="wbp-msg-head">
                 <div class="wbp-msg-head-left">
                     <h4>WebBuilder</h4>
-                    <p><span class="wbp-msg-head-dot"></span> Usually replies in a few hours</p>
+                    <p><span class="wbp-msg-head-dot"></span> <span data-i18n="chat.online">Usually replies in a few hours</span></p>
                 </div>
                 <button class="wbp-msg-close" onclick="wbpMsgClose()"><i class="fas fa-times"></i></button>
             </div>
             <div id="wbp-msg-screen-auth">
                 <div class="wbp-msg-auth">
-                    <h5 id="wbp-msg-auth-title">Say hello 👋</h5>
-                    <p id="wbp-msg-auth-sub">Sign in or create a free account to chat with us</p>
+                    <h5 id="wbp-msg-auth-title" data-i18n="chat.hello">Say hello 👋</h5>
+                    <p id="wbp-msg-auth-sub" data-i18n="chat.signin_sub">Sign in to chat with us</p>
                     <input type="email" id="wbp-msg-email" placeholder="Email" />
                     <input type="password" id="wbp-msg-pass" placeholder="Password" />
-                    <button class="wbp-msg-auth-btn" id="wbp-msg-auth-btn" onclick="wbpMsgAuth()">Sign In</button>
+                    <button class="wbp-msg-auth-btn" id="wbp-msg-auth-btn" onclick="wbpMsgAuth()" data-i18n="chat.signin_btn">Sign In</button>
                     <div class="wbp-msg-auth-err" id="wbp-msg-auth-err"></div>
-                    <div class="wbp-msg-reset-link"><a onclick="wbpMsgResetPwd()">Forgot password?</a></div>
-                    <div class="wbp-msg-reset-ok" id="wbp-msg-reset-ok">✅ Reset email sent! Check your inbox.</div>
+                    <div class="wbp-msg-reset-link"><a onclick="wbpMsgResetPwd()" data-i18n="chat.forgot">Forgot password?</a></div>
+                    <div class="wbp-msg-reset-ok" id="wbp-msg-reset-ok" data-i18n="chat.reset_ok">✅ Reset email sent! Check your inbox.</div>
                     <div class="wbp-msg-auth-switch">
-                        <span id="wbp-msg-switch-txt">Don't have an account?</span>
-                        <a onclick="wbpMsgToggleReg()" id="wbp-msg-switch-link">Create one</a>
+                        <span id="wbp-msg-switch-txt" data-i18n="chat.no_account">Don't have an account?</span>
+                        <a onclick="wbpMsgToggleReg()" id="wbp-msg-switch-link" data-i18n="chat.create_one">Create one</a>
                     </div>
                 </div>
             </div>
@@ -5900,31 +5969,20 @@ return false;
                 <div class="wbp-msg-body" id="wbp-msg-messages">
                     <div class="wbp-msg-no" id="wbp-msg-no">
                         <i class="fas fa-comments"></i>
-                        <p>No messages yet</p>
-                        <p style="font-size:0.7rem;opacity:0.7">Send us a message and we'll reply soon!</p>
+                        <p data-i18n="chat.no_messages">No messages yet</p>
+                        <p style="font-size:0.7rem;opacity:0.7" data-i18n="chat.no_messages_sub">Send us a message and we'll reply soon!</p>
                     </div>
                 </div>
                 <div class="wbp-msg-input-row">
-                    <input type="text" class="wbp-msg-input" id="wbp-msg-txt" placeholder="Type a message..." />
+                    <input type="text" class="wbp-msg-input" id="wbp-msg-txt" placeholder="Type a message..." data-i18n-placeholder="chat.placeholder" />
                     <button class="wbp-msg-send" id="wbp-msg-send-btn" onclick="wbpMsgSend()"><i class="fas fa-paper-plane"></i></button>
                 </div>
             </div>
         </div>
 
-        <a class="contact-option tg" href="https://t.me/LoveBomboclaut" target="_blank" rel="noopener" title="Telegram" style="transition-delay:.12s">
-            <i class="fab fa-telegram-plane"></i>
-            <span class="contact-option-label">Telegram</span>
-        </a>
-        <a class="contact-option wa" href="https://wa.me/40729552767" target="_blank" rel="noopener" title="WhatsApp" style="transition-delay:.06s">
-            <i class="fab fa-whatsapp"></i>
-            <span class="contact-option-label">WhatsApp</span>
-        </a>
-        <button class="contact-option msg-opt" id="contactMsgBtn" onclick="wbpMsgTogglePanel(event)" title="Message Us" style="transition-delay:.02s; text-decoration:none; border:none; cursor:pointer;">
-            <i class="fas fa-envelope"></i>
-            <span class="contact-option-label">Message Us</span>
-        </button>
-        <button class="contact-fab" id="contactFab" onclick="toggleContactFab()" title="Contact Us">
+        <button class="contact-fab" id="contactFab" onclick="wbpMsgDirectOpen()" title="Chat with us">
             <span class="contact-fab-icon"><i class="fas fa-comment-dots"></i></span>
+            <span id="dm-notif-badge" style="position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:#ef4444;border-radius:50%;font-size:0.62rem;font-weight:800;color:white;display:none;align-items:center;justify-content:center;border:2px solid white;font-family:Inter,sans-serif;"></span>
         </button>
     </div>
     <script>
@@ -5960,21 +6018,25 @@ return false;
             }, 300);
         }
 
-        function toggleContactFab(){
-            const wrap=document.getElementById('contactFabWrap');
-            const btn=document.getElementById('contactFab');
-            wrap.classList.toggle('open');
-            btn.classList.toggle('open');
+        function wbpMsgDirectOpen(){
+            // Open chat panel directly
+            const panel=document.getElementById('wbp-msg-panel');
+            if(!panel)return;
+            if(panel.classList.contains('open')){
+                wbpMsgClose();
+            } else {
+                window._panelOpen=true; panel.classList.add('open');
+                if(window._dmUser){
+                    if(window._dmOnLogin)window._dmOnLogin(window._dmUser);
+                    setTimeout(()=>document.getElementById('wbp-msg-txt')?.focus(),300);
+                } else {
+                    setTimeout(()=>document.getElementById('wbp-msg-email')?.focus(),300);
+                }
+            }
         }
-        function closeContactFab(){
-            document.getElementById('contactFabWrap').classList.remove('open');
-            document.getElementById('contactFab').classList.remove('open');
-        }
-        document.addEventListener('click',e=>{
-            const wrap=document.getElementById('contactFabWrap');
-            if(wrap&&!wrap.contains(e.target))closeContactFab();
-        });
-        document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeContactFab(); wbpMsgClose(); } });
+        function toggleContactFab(){ wbpMsgDirectOpen(); }
+        function closeContactFab(){ wbpMsgClose(); }
+        document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ wbpMsgClose(); } });
 
         function heroGetStarted() {
             const packagesSection = document.getElementById('packages');
@@ -6119,13 +6181,24 @@ return false;
         }
     }
 
+    function dmGetTrans(key){
+        try{ const lang=localStorage.getItem('preferred-language')||'en'; const ls=window._langSys; if(ls&&ls.translations&&ls.translations[lang]&&ls.translations[lang][key])return ls.translations[lang][key]; }catch(e){}
+        const fallback={en:{'chat.hello':'Say hello 👋','chat.signin_sub':'Sign in to chat with us','chat.signup_title':'Create account','chat.signup_sub':'Create a free account to chat with us','chat.signin_btn':'Sign In','chat.signup_btn':'Create Account','chat.no_account':"Don't have an account?",'chat.create_one':'Create one','chat.has_account':'Already have an account?','chat.forgot':'Forgot password?','chat.reset_ok':'✅ Reset email sent! Check your inbox.'}};
+        return (fallback.en||{})[key]||key;
+    }
+    function wbpMsgUpdateLangUI(){
+        const t=dmGetTrans;
+        document.getElementById('wbp-msg-auth-title').textContent=_dmReg?t('chat.signup_title'):t('chat.hello');
+        document.getElementById('wbp-msg-auth-sub').textContent=_dmReg?t('chat.signup_sub'):t('chat.signin_sub');
+        document.getElementById('wbp-msg-auth-btn').textContent=_dmReg?t('chat.signup_btn'):t('chat.signin_btn');
+        document.getElementById('wbp-msg-switch-txt').textContent=_dmReg?t('chat.has_account'):t('chat.no_account');
+        document.getElementById('wbp-msg-switch-link').textContent=_dmReg?t('chat.signin_btn'):t('chat.create_one');
+        const inp=document.getElementById('wbp-msg-txt'); if(inp)inp.placeholder=t('chat.placeholder');
+        const onl=document.querySelector('.wbp-msg-head-left p span:last-child'); if(onl)onl.textContent=t('chat.online');
+    }
     function wbpMsgToggleReg(){
         _dmReg=!_dmReg;
-        document.getElementById('wbp-msg-auth-title').textContent=_dmReg?'Create account':'Say hello 👋';
-        document.getElementById('wbp-msg-auth-sub').textContent=_dmReg?'Create a free account to chat with us':'Sign in to chat with us';
-        document.getElementById('wbp-msg-auth-btn').textContent=_dmReg?'Create Account':'Sign In';
-        document.getElementById('wbp-msg-switch-txt').textContent=_dmReg?'Already have an account?':"Don't have an account?";
-        document.getElementById('wbp-msg-switch-link').textContent=_dmReg?'Sign In':'Create one';
+        wbpMsgUpdateLangUI();
         document.getElementById('wbp-msg-auth-err').style.display='none';
         document.getElementById('wbp-msg-reset-ok').style.display='none';
     }
@@ -6140,28 +6213,22 @@ return false;
     let _dmNotifCount=0;
     function dmSetBadge(n){
         _dmNotifCount=n;
-        // Show a small badge on the Message Us button
-        let badge=document.getElementById('dm-notif-badge');
-        if(!badge){
-            badge=document.createElement('span');
-            badge.id='dm-notif-badge';
-            badge.style.cssText='position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:#ef4444;border-radius:50%;font-size:0.6rem;font-weight:800;color:white;display:flex;align-items:center;justify-content:center;border:2px solid white;font-family:Inter,sans-serif;';
-            const btn=document.getElementById('contactMsgBtn');
-            if(btn){btn.style.position='relative';btn.appendChild(badge);}
+        const badge=document.getElementById('dm-notif-badge');
+        if(badge){
+            badge.textContent=n>0?String(n):'';
+            badge.style.display=n>0?'flex':'none';
         }
-        badge.textContent=n;
-        badge.style.display=n>0?'flex':'none';
     }
 
     window.wbpMsgTogglePanel=function(e){
-        e.stopPropagation();
+        if(e)e.stopPropagation();
         const panel=document.getElementById('wbp-msg-panel');
         _panelOpen=!panel.classList.contains('open');
         panel.classList.toggle('open',_panelOpen);
+        window._panelOpen=_panelOpen;
         if(_panelOpen){
             dmSetBadge(0);
             if(_dmUser){
-                // Mark messages as read
                 dmOnLogin(_dmUser);
                 setTimeout(()=>document.getElementById('wbp-msg-txt')?.focus(),300);
             } else {
@@ -6177,25 +6244,19 @@ return false;
     window.wbpMsgResetPwd=wbpMsgResetPwd;
     window.wbpMsgToggleReg=wbpMsgToggleReg;
     window.wbpMsgSend=wbpMsgSend;
+    window._dmOnLogin=dmOnLogin;
+    Object.defineProperty(window,'_dmUser',{get:()=>_dmUser});
 
     // Enter key support
     document.addEventListener('DOMContentLoaded',()=>{
         document.getElementById('wbp-msg-txt')?.addEventListener('keydown',e=>{ if(e.key==='Enter')wbpMsgSend(); });
         document.getElementById('wbp-msg-email')?.addEventListener('keydown',e=>{ if(e.key==='Enter')document.getElementById('wbp-msg-pass')?.focus(); });
-        document.getElementById('wbp-msg-pass')?.addEventListener('keydown',e=>{ if(e.key==='Enter')wbpMsgAuth(); });
-        dmFirebase();
+        document.getElementById('wbp-msg-pass')?.addEventListener('keydown',e=>{ if(e.key==='Enter')wbpMsgSend(); });
     });
 
-    // Close panel when clicking outside
-    document.addEventListener('click',e=>{
-        const panel=document.getElementById('wbp-msg-panel');
-        const btn=document.getElementById('contactMsgBtn');
-        if(panel&&panel.classList.contains('open')&&!panel.contains(e.target)&&e.target!==btn&&!btn?.contains(e.target)){
-            wbpMsgClose();
-        }
-    });
-
-    })();
+    dmFirebase();
+    }());
     </script>
+
 </body>
 </html>
