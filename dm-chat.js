@@ -1,14 +1,16 @@
 /**
  * WebBuilder — Direct Message Chat (dm-chat.js)
- * Extracted from index.html inline script.
- * Fixed: uses user.uid as chatId (matches Firestore rule: request.auth.uid == chatId)
- * Fixed: "service not available" — retries if Firebase not ready yet
+ * ✓ Uses user.uid as chatId (matches Firestore rule)
+ * ✓ Register form: Name (required) + Phone (optional) + Email + Password
+ * ✓ Syncs with auth.js on login/logout → mobile menu re-renders
+ * ✓ "Service not available" fix — retries if Firebase not ready
  */
 (function () {
 'use strict';
 
 let _db = null, _auth = null;
-let _dmUser = null, _dmChatId = null, _dmUnsub = null, _dmReg = false;
+let _dmUser = null, _dmChatId = null, _dmUnsub = null;
+let _dmReg = false;        // true = register mode
 let _panelOpen = false, _dmNotifCount = 0;
 
 // ── Firebase init ──────────────────────────────────────────────────────
@@ -28,11 +30,13 @@ function dmFirebase() {
 
 // ── Login / Logout ─────────────────────────────────────────────────────
 function dmOnLogin(u) {
-  _dmChatId = u.uid; // ✅ UID as chatId — matches Firestore rule
+  _dmChatId = u.uid;  // UID as chatId — matches Firestore rule
+  // Show chat screen
   const authScreen = document.getElementById('wbp-msg-screen-auth');
   const chatScreen = document.getElementById('wbp-msg-screen-chat');
   if (authScreen) authScreen.style.display = 'none';
   if (chatScreen) chatScreen.style.display = 'flex';
+  // Start Firestore listener
   if (_dmUnsub) _dmUnsub();
   if (_db) {
     _dmUnsub = _db.collection('chats').doc(_dmChatId)
@@ -51,6 +55,8 @@ function dmOnLogin(u) {
         }
       });
   }
+  // Notify auth.js so mobile hamburger menu re-renders
+  _syncAuthJs();
   setTimeout(() => document.getElementById('wbp-msg-txt')?.focus(), 200);
 }
 
@@ -61,6 +67,18 @@ function dmOnLogout() {
   const chatScreen = document.getElementById('wbp-msg-screen-chat');
   if (authScreen) authScreen.style.display = '';
   if (chatScreen) chatScreen.style.display = 'none';
+}
+
+/**
+ * Tell auth.js to re-render nav + mobile menu.
+ * Works because auth.js listens to the same Firebase auth state.
+ * We just nudge it to re-render immediately without waiting.
+ */
+function _syncAuthJs() {
+  // auth.js exposes renderAll via a DOMContentLoaded-safe timeout
+  setTimeout(() => {
+    if (window._authRenderAll) window._authRenderAll();
+  }, 80);
 }
 
 // ── Render messages ────────────────────────────────────────────────────
@@ -108,32 +126,88 @@ async function wbpMsgSend() {
   finally { btn.disabled = false; input.focus(); }
 }
 
+// ── Auth screen HTML (injected into wbp-msg-screen-auth) ──────────────
+function dmBuildAuthScreen() {
+  const screen = document.getElementById('wbp-msg-screen-auth');
+  if (!screen || screen.dataset.built) return;
+  screen.dataset.built = '1';
+  screen.innerHTML = `
+    <div class="wbp-msg-auth">
+      <h5 id="wbp-msg-auth-title">Say hello 👋</h5>
+      <p id="wbp-msg-auth-sub">Sign in to chat with us</p>
+
+      <div id="wbp-msg-name-wrap" style="display:none">
+        <input type="text" id="wbp-msg-name"  placeholder="Your name *" style="margin-bottom:8px;width:100%;padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-family:Inter,sans-serif;font-size:0.82rem;color:#1e293b;outline:none;transition:border-color 0.2s;" />
+      </div>
+
+      <input type="email"    id="wbp-msg-email" placeholder="Email *"    style="margin-bottom:8px;width:100%;padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-family:Inter,sans-serif;font-size:0.82rem;color:#1e293b;outline:none;transition:border-color 0.2s;" />
+      <input type="password" id="wbp-msg-pass"  placeholder="Password *" style="margin-bottom:8px;width:100%;padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-family:Inter,sans-serif;font-size:0.82rem;color:#1e293b;outline:none;transition:border-color 0.2s;" />
+
+      <div id="wbp-msg-phone-wrap" style="display:none">
+        <input type="tel" id="wbp-msg-phone" placeholder="Phone (optional)" style="margin-bottom:8px;width:100%;padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-family:Inter,sans-serif;font-size:0.82rem;color:#1e293b;outline:none;transition:border-color 0.2s;" />
+      </div>
+
+      <button onclick="wbpMsgAuth()" id="wbp-msg-auth-btn" style="width:100%;padding:10px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;border:none;border-radius:8px;font-family:Inter,sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.2s;">Sign In</button>
+
+      <div id="wbp-msg-auth-err" style="color:#7f1d1d;font-size:0.75rem;margin-top:6px;font-family:Inter,sans-serif;display:none;"></div>
+
+      <div style="text-align:center;margin-top:8px;font-size:0.72rem;color:#64748b;font-family:Inter,sans-serif;">
+        <button onclick="wbpMsgResetPwd()" style="background:none;border:none;color:#3b82f6;cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;">Forgot password?</button>
+      </div>
+      <div id="wbp-msg-reset-ok" style="color:#065f46;background:#ecfdf5;padding:8px 10px;border-radius:7px;font-size:0.75rem;font-family:Inter,sans-serif;margin-top:6px;display:none;text-align:center;">✅ Reset email sent! Check your inbox.</div>
+
+      <div style="text-align:center;margin-top:10px;font-size:0.75rem;color:#64748b;font-family:Inter,sans-serif;">
+        <span id="wbp-msg-switch-txt">Don't have an account?</span>
+        <button onclick="wbpMsgToggleReg()" id="wbp-msg-switch-link" style="background:none;border:none;color:#3b82f6;cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;padding:0 0 0 4px;">Create one</button>
+      </div>
+    </div>`;
+
+  // Key listeners
+  document.getElementById('wbp-msg-email')?.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('wbp-msg-pass')?.focus(); });
+  document.getElementById('wbp-msg-pass')?.addEventListener('keydown',  e => { if (e.key === 'Enter') wbpMsgAuth(); });
+  document.getElementById('wbp-msg-name')?.addEventListener('keydown',  e => { if (e.key === 'Enter') document.getElementById('wbp-msg-email')?.focus(); });
+  document.getElementById('wbp-msg-phone')?.addEventListener('keydown', e => { if (e.key === 'Enter') wbpMsgAuth(); });
+}
+
 // ── Auth actions ───────────────────────────────────────────────────────
 async function wbpMsgAuth() {
-  const email = document.getElementById('wbp-msg-email').value.trim();
-  const pass  = document.getElementById('wbp-msg-pass').value;
+  const email = document.getElementById('wbp-msg-email')?.value.trim();
+  const pass  = document.getElementById('wbp-msg-pass')?.value;
+  const name  = document.getElementById('wbp-msg-name')?.value.trim();
+  const phone = document.getElementById('wbp-msg-phone')?.value.trim();
   const btn   = document.getElementById('wbp-msg-auth-btn');
-  const err   = document.getElementById('wbp-msg-auth-err');
-  if (!email || !pass) { dmShowErr('Please fill in all fields.'); return; }
-  // If Firebase isn't ready yet, try to init and retry once
+  if (!email || !pass) { dmShowErr('Please fill in all required fields.'); return; }
+  if (_dmReg && !name) { dmShowErr('Please enter your name.'); return; }
+  // Firebase not ready yet — retry
   if (!_auth) {
     dmFirebase();
-    btn.disabled    = true;
-    btn.textContent = 'Connecting...';
+    if (btn) { btn.disabled = true; btn.textContent = 'Connecting…'; }
     setTimeout(wbpMsgAuth, 1000);
     return;
   }
-  btn.disabled    = true;
-  btn.textContent = _dmReg ? 'Creating...' : 'Signing in...';
-  if (err) err.style.display = 'none';
+  if (btn) { btn.disabled = true; btn.textContent = _dmReg ? 'Creating…' : 'Signing in…'; }
+  const errEl = document.getElementById('wbp-msg-auth-err');
+  if (errEl) errEl.style.display = 'none';
   const resetOk = document.getElementById('wbp-msg-reset-ok');
   if (resetOk) resetOk.style.display = 'none';
   try {
     if (_dmReg) {
-      await _auth.createUserWithEmailAndPassword(email, pass);
+      const cred = await _auth.createUserWithEmailAndPassword(email, pass);
+      // Update display name
+      if (name) await cred.user.updateProfile({ displayName: name });
+      // Save to Firestore users collection (same as auth.js does)
+      if (_db) {
+        await _db.collection('users').doc(cred.user.uid).set({
+          displayName: name || email.split('@')[0],
+          phone:       phone || '',
+          email:       email,
+          createdAt:   new Date().toISOString()
+        }, { merge: true });
+      }
     } else {
       await _auth.signInWithEmailAndPassword(email, pass);
     }
+    // onAuthStateChanged fires dmOnLogin which handles UI switch
   } catch(e) {
     const msgs = {
       'auth/user-not-found':       'No account with this email.',
@@ -145,13 +219,12 @@ async function wbpMsgAuth() {
       'auth/too-many-requests':    'Too many attempts. Try again later.',
     };
     dmShowErr(msgs[e.code] || 'Error. Please try again.');
-    btn.disabled    = false;
-    btn.textContent = _dmReg ? 'Create Account' : 'Sign In';
+    if (btn) { btn.disabled = false; btn.textContent = _dmReg ? 'Create Account' : 'Sign In'; }
   }
 }
 
 async function wbpMsgResetPwd() {
-  const email = document.getElementById('wbp-msg-email').value.trim();
+  const email = document.getElementById('wbp-msg-email')?.value.trim();
   const ok    = document.getElementById('wbp-msg-reset-ok');
   if (!email) { dmShowErr('Enter your email first.'); return; }
   if (!_auth) { dmShowErr('Service not ready. Refresh the page.'); return; }
@@ -167,14 +240,30 @@ async function wbpMsgResetPwd() {
 
 function wbpMsgToggleReg() {
   _dmReg = !_dmReg;
-  wbpMsgUpdateLangUI();
+  _updateAuthScreenUI();
   const err = document.getElementById('wbp-msg-auth-err');
   const ok  = document.getElementById('wbp-msg-reset-ok');
   if (err) err.style.display = 'none';
   if (ok)  ok.style.display  = 'none';
-  // Re-enable button in case it was left disabled
   const btn = document.getElementById('wbp-msg-auth-btn');
   if (btn) btn.disabled = false;
+}
+
+function _updateAuthScreenUI() {
+  const nameWrap  = document.getElementById('wbp-msg-name-wrap');
+  const phoneWrap = document.getElementById('wbp-msg-phone-wrap');
+  const title     = document.getElementById('wbp-msg-auth-title');
+  const sub       = document.getElementById('wbp-msg-auth-sub');
+  const btn       = document.getElementById('wbp-msg-auth-btn');
+  const swTxt     = document.getElementById('wbp-msg-switch-txt');
+  const swLink    = document.getElementById('wbp-msg-switch-link');
+  if (nameWrap)  nameWrap.style.display  = _dmReg ? 'block' : 'none';
+  if (phoneWrap) phoneWrap.style.display = _dmReg ? 'block' : 'none';
+  if (title)  title.textContent  = _dmReg ? 'Create account' : 'Say hello 👋';
+  if (sub)    sub.textContent    = _dmReg ? 'Register to chat with us' : 'Sign in to chat with us';
+  if (btn)    btn.textContent    = _dmReg ? 'Create Account' : 'Sign In';
+  if (swTxt)  swTxt.textContent  = _dmReg ? 'Already have an account?' : "Don't have an account?";
+  if (swLink) swLink.textContent = _dmReg ? 'Sign In' : 'Create one';
 }
 
 // ── Badge ──────────────────────────────────────────────────────────────
@@ -183,7 +272,7 @@ function dmSetBadge(n) {
   const badge = document.getElementById('dm-notif-badge');
   if (badge) {
     badge.textContent   = n > 0 ? String(n) : '';
-    badge.style.display = n > 0 ? 'flex'    : 'none';
+    badge.style.display = n > 0 ? 'flex' : 'none';
   }
 }
 
@@ -201,7 +290,13 @@ function wbpMsgDirectOpen() {
       dmOnLogin(_dmUser);
       setTimeout(() => document.getElementById('wbp-msg-txt')?.focus(), 300);
     } else {
-      setTimeout(() => document.getElementById('wbp-msg-email')?.focus(), 300);
+      _updateAuthScreenUI();
+      setTimeout(() => {
+        const firstInput = _dmReg
+          ? document.getElementById('wbp-msg-name')
+          : document.getElementById('wbp-msg-email');
+        firstInput?.focus();
+      }, 300);
     }
   }
 }
@@ -223,43 +318,10 @@ function wbpMsgTogglePanel(e) {
       dmOnLogin(_dmUser);
       setTimeout(() => document.getElementById('wbp-msg-txt')?.focus(), 300);
     } else {
+      _updateAuthScreenUI();
       setTimeout(() => document.getElementById('wbp-msg-email')?.focus(), 300);
     }
   }
-}
-
-// ── Language UI ────────────────────────────────────────────────────────
-function dmGetTrans(key) {
-  try {
-    const lang = localStorage.getItem('preferred-language') || 'en';
-    const ls   = window._langSys;
-    if (ls && ls.translations && ls.translations[lang] && ls.translations[lang][key])
-      return ls.translations[lang][key];
-  } catch(e) {}
-  const fallback = {
-    'chat.hello':        'Say hello 👋',
-    'chat.signin_sub':   'Sign in to chat with us',
-    'chat.signup_title': 'Create account',
-    'chat.signup_sub':   'Create a free account to chat with us',
-    'chat.signin_btn':   'Sign In',
-    'chat.signup_btn':   'Create Account',
-    'chat.no_account':   "Don't have an account?",
-    'chat.create_one':   'Create one',
-    'chat.has_account':  'Already have an account?',
-    'chat.forgot':       'Forgot password?',
-    'chat.reset_ok':     '✅ Reset email sent! Check your inbox.',
-  };
-  return fallback[key] || key;
-}
-
-function wbpMsgUpdateLangUI() {
-  const t = dmGetTrans;
-  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  set('wbp-msg-auth-title',  _dmReg ? t('chat.signup_title') : t('chat.hello'));
-  set('wbp-msg-auth-sub',    _dmReg ? t('chat.signup_sub')   : t('chat.signin_sub'));
-  set('wbp-msg-auth-btn',    _dmReg ? t('chat.signup_btn')   : t('chat.signin_btn'));
-  set('wbp-msg-switch-txt',  _dmReg ? t('chat.has_account')  : t('chat.no_account'));
-  set('wbp-msg-switch-link', _dmReg ? t('chat.signin_btn')   : t('chat.create_one'));
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────
@@ -284,9 +346,10 @@ Object.defineProperty(window, '_dmUser', { get: () => _dmUser });
 
 // ── Boot ───────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('wbp-msg-txt')?.addEventListener('keydown',   e => { if (e.key === 'Enter') wbpMsgSend(); });
-  document.getElementById('wbp-msg-email')?.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('wbp-msg-pass')?.focus(); });
-  document.getElementById('wbp-msg-pass')?.addEventListener('keydown',  e => { if (e.key === 'Enter') wbpMsgAuth(); });
+  // Build auth screen HTML inside the panel (replaces old inline HTML)
+  dmBuildAuthScreen();
+  // Message send on Enter
+  document.getElementById('wbp-msg-txt')?.addEventListener('keydown', e => { if (e.key === 'Enter') wbpMsgSend(); });
   dmFirebase();
 });
 

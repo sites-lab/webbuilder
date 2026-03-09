@@ -1292,6 +1292,7 @@ function epShowMsg(id, text, type) {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // GLOBALS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+window._authRenderAll     = renderAll;   // used by dm-chat.js to sync mobile menu after chat login
 window.authOpenModal      = authOpenModal;
 window.authCloseModal     = authCloseModal;
 window.authToggleMode     = authToggleMode;

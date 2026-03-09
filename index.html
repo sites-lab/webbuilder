@@ -2535,22 +2535,8 @@ mobileTabs.handleResize();
                 </div>
                 <button class="wbp-msg-close" onclick="wbpMsgClose()" aria-label="Close chat"><i class="fas fa-times"></i></button>
             </div>
-            <div id="wbp-msg-screen-auth">
-                <div class="wbp-msg-auth">
-                    <h5 id="wbp-msg-auth-title" data-i18n="chat.hello">Say hello 👋</h5>
-                    <p id="wbp-msg-auth-sub" data-i18n="chat.signin_sub">Sign in to chat with us</p>
-                    <input type="email" id="wbp-msg-email" placeholder="Email" />
-                    <input type="password" id="wbp-msg-pass" placeholder="Password" />
-                    <button class="wbp-msg-auth-btn" id="wbp-msg-auth-btn" onclick="wbpMsgAuth()" data-i18n="chat.signin_btn">Sign In</button>
-                    <div class="wbp-msg-auth-err" id="wbp-msg-auth-err"></div>
-                    <div class="wbp-msg-reset-link"><button onclick="wbpMsgResetPwd()" aria-label="Send password reset email" data-i18n="chat.forgot" style="background:none;border:none;color:#3b82f6;cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;">Forgot password?</button></div>
-                    <div class="wbp-msg-reset-ok" id="wbp-msg-reset-ok" data-i18n="chat.reset_ok">✅ Reset email sent! Check your inbox.</div>
-                    <div class="wbp-msg-auth-switch">
-                        <span id="wbp-msg-switch-txt" data-i18n="chat.no_account">Don't have an account?</span>
-                        <button onclick="wbpMsgToggleReg()" id="wbp-msg-switch-link" data-i18n="chat.create_one" style="background:none;border:none;color:#3b82f6;cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;padding:0;">Create one</button>
-                    </div>
-                </div>
-            </div>
+            <!-- Auth screen built dynamically by dm-chat.js -->
+            <div id="wbp-msg-screen-auth"></div>
             <div id="wbp-msg-screen-chat" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
                 <div class="wbp-msg-body" id="wbp-msg-messages">
                     <div class="wbp-msg-no" id="wbp-msg-no">

@@ -1603,9 +1603,28 @@ function _renderToList(listId, noMsgId, messages, notifyOnNew) {
     list.scrollTop = list.scrollHeight;
 }
 
+// ── Payment page chat: also write to chats/{uid} so admin sees it in DM panel ──
+async function _sendToChatCollection(text, authorName, userEmail, uid) {
+    if (!_db || !uid) return;
+    try {
+        const ref  = _db.collection('chats').doc(uid);
+        const snap = await ref.get();
+        const existing = snap.exists ? (snap.data().messages || []) : [];
+        const msg = { from: 'client', text, timestamp: new Date().toISOString(), author: authorName };
+        await ref.set({
+            messages:       [...existing, msg],
+            email:          userEmail,
+            uid:            uid,
+            lastMessage:    text,
+            lastUpdated:    new Date().toISOString(),
+            hasUnreadAdmin: true
+        }, { merge: true });
+    } catch(e) { console.warn('Chat collection write:', e); }
+}
+
 async function sendMessage() {
     const input = document.getElementById('msgInput');
-    const text = (input.value || input.value).trim();
+    const text = (input.value || '').trim();
     if (!text) return;
 
     const btn = document.getElementById('msgSendBtn');
@@ -1614,23 +1633,32 @@ async function sendMessage() {
 
     // Use logged-in user name if available
     let authorName = orderData?.customer_name || 'Customer';
+    let userEmail  = orderData?.customer_email || '';
+    let uid        = null;
     try {
         const wbpUser = JSON.parse(localStorage.getItem('wbp_user') || '{}');
         if (wbpUser.displayName) authorName = wbpUser.displayName;
         else if (wbpUser.email) authorName = wbpUser.email.split('@')[0];
+        if (wbpUser.email) userEmail = wbpUser.email;
+        if (wbpUser.uid)   uid       = wbpUser.uid;
     } catch(e) {}
+    // Also try Firebase auth directly
+    if (!uid && _auth?.currentUser) {
+        uid       = _auth.currentUser.uid;
+        userEmail = _auth.currentUser.email || userEmail;
+    }
 
     const message = {
-        from: 'client',
+        from:      'client',
         text,
         timestamp: new Date().toISOString(),
-        author: authorName
+        author:    authorName
     };
 
+    // Write to orders collection (order-specific chat)
     if (_db && currentOrderId) {
         await addMessageToFirestore(currentOrderId, message);
     } else {
-        // localStorage fallback for demo
         try {
             const all = JSON.parse(localStorage.getItem('allOrders') || '[]');
             const idx = all.findIndex(o => o.order_id === currentOrderId);
@@ -1642,6 +1670,11 @@ async function sendMessage() {
                 renderMessages(msgs);
             }
         } catch(e) {}
+    }
+
+    // Also write to chats/{uid} so it appears in the floating DM panel
+    if (uid) {
+        await _sendToChatCollection(text, authorName, userEmail, uid);
     }
 
     btn.disabled = false;
@@ -1664,11 +1697,19 @@ async function sendMessageDesktop() {
     btn.disabled = true;
     input.value = '';
     let authorName = orderData?.customer_name || 'Customer';
+    let userEmail  = orderData?.customer_email || '';
+    let uid        = null;
     try {
         const wbpUser = JSON.parse(localStorage.getItem('wbp_user') || '{}');
         if (wbpUser.displayName) authorName = wbpUser.displayName;
         else if (wbpUser.email) authorName = wbpUser.email.split('@')[0];
+        if (wbpUser.email) userEmail = wbpUser.email;
+        if (wbpUser.uid)   uid       = wbpUser.uid;
     } catch(e) {}
+    if (!uid && _auth?.currentUser) {
+        uid       = _auth.currentUser.uid;
+        userEmail = _auth.currentUser.email || userEmail;
+    }
     const message = { from: 'client', text, timestamp: new Date().toISOString(), author: authorName };
     if (_db && currentOrderId) {
         await addMessageToFirestore(currentOrderId, message);
@@ -1685,6 +1726,7 @@ async function sendMessageDesktop() {
             }
         } catch(e) {}
     }
+    if (uid) await _sendToChatCollection(text, authorName, userEmail, uid);
     btn.disabled = false;
     input.focus();
 }
