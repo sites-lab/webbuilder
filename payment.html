@@ -44,9 +44,8 @@
                 if (snap.empty) return null;
                 const docRef = snap.docs[0].ref;
                 const data = snap.docs[0].data();
-                const messages = data.messages || [];
-                messages.push(message);
-                await docRef.update({ messages });
+                const messages = [...(data.messages || []), message];
+                await docRef.set({ messages }, { merge: true });
                 return messages;
             } catch(e) { console.error('Firestore message error:', e); return null; }
         }
@@ -1377,7 +1376,7 @@ function _renderToList(listId, noMsgId, messages, notifyOnNew) {
     Array.from(list.querySelectorAll('.msg')).forEach(c => c.remove());
 
     messages.forEach(m => {
-        const isClient = m.from === 'client';
+        const isClient = m.from === 'client' || m.from === 'user';
         const lang = currentLang;
         const name = isClient ? (T[lang]['chat.you'] || 'You') : (T[lang]['chat.admin'] || 'WebBuilder');
         const initial = name.charAt(0).toUpperCase();
