@@ -1,0 +1,7 @@
+PATCH NOTES - Changes applied to fix chat/orders:
+1. index.html: Changed _dmChatId from email-based to UID-based
+2. index.html: wbpMsgSend now saves displayName, uid, uses arrayUnion
+3. payment.html: Added _mirrorToChats() to also write to chats collection
+4. admin.html: renderChatMessages now accepts from='user' (not just 'client')
+5. admin.html: dmShowThread now accepts from='client' too
+6. firebase-config.js: Created template file (must be filled with real Firebase credentials)
