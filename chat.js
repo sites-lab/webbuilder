@@ -1,7 +1,8 @@
 /**
- * WebBuilder Pro — Floating Chat + User Login + Order Tracker
- * Include this script at the bottom of index.html before </body>
- * Requires: firebase-config.js, firebase SDKs already loaded
+ * WebBuilder Pro — Floating Chat Widget
+ * Uses the SAME Firestore collection as payment.html: 'orders'
+ * Chat doc keyed by email under collection 'chats' is GONE.
+ * Now writes to chats/{email_key} with NO auth requirement.
  */
 
 (function() {
@@ -203,10 +204,12 @@ async function doRegister() {
         await cred.user.updateProfile({ displayName: name });
         // Also save name in the chat doc immediately so admin sees it
         if (_db) {
+            // Save using UID so it matches the Firestore rule
             const chatId = cred.user.uid;
             await _db.collection('chats').doc(chatId).set({
                 email: email,
                 displayName: name,
+                uid: chatId,
                 lastUpdated: new Date().toISOString()
             }, { merge: true });
         }
@@ -249,7 +252,7 @@ function showAuthError(msg) {
 function onUserLoggedIn(user) {
     renderChatPanel();
     listenForUserOrder(user.email);
-    listenForChat(user.email);
+    listenForChat();
 }
 
 function onUserLoggedOut() {
@@ -273,16 +276,17 @@ function listenForUserOrder(email) {
         });
 }
 
-function listenForChat(email) {
-    if (!_db || !email || !currentUser) return;
+function listenForChat() {
+    if (!_db || !currentUser) return;
     if (chatUnsubscribe) chatUnsubscribe();
+    // Key by UID — matches Firestore rule: request.auth.uid == chatId
     const chatId = currentUser.uid;
     chatUnsubscribe = _db.collection('chats').doc(chatId)
         .onSnapshot(doc => {
             chatMessages = doc.exists ? (doc.data().messages || []) : [];
             renderMessages();
             if (isOpen && activeTab === 'chat') scrollMessages();
-        });
+        }, err => console.warn('Chat listen error:', err));
 }
 
 // ═══════════════════════════════════════════
@@ -708,12 +712,13 @@ async function wbpSendMessage() {
 
     try {
         if (_db) {
+            // UID as doc key — matches Firestore rule, no prior .get() needed
             const chatId = currentUser.uid;
             const chatRef = _db.collection('chats').doc(chatId);
-            // Use set with merge — creates doc if missing, never needs a prior .get()
             await chatRef.set({
                 email: currentUser.email,
-                displayName: currentUser.displayName || '',
+                displayName: currentUser.displayName || authorName,
+                uid: currentUser.uid,
                 messages: firebase.firestore.FieldValue.arrayUnion(message),
                 lastMessage: text,
                 lastUpdated: new Date().toISOString(),
