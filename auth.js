@@ -107,15 +107,11 @@ let isRegMode = false, modalOpen = false;
 // FIREBASE
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function initAuth() {
-  // If Firebase SDK not loaded yet, retry in 200ms
-  if (typeof firebase === 'undefined' || !firebase.auth) {
-    setTimeout(initAuth, 200); return;
-  }
   try {
     if (typeof FIREBASE_CONFIG === 'undefined' || FIREBASE_CONFIG.apiKey === 'YOUR_API_KEY') return;
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     _auth = firebase.auth();
-    _db   = firebase.firestore();
+    _db = firebase.firestore();
     _auth.onAuthStateChanged(user => {
       currentUser = user;
       if (user) loadUserProfile(user);
@@ -283,180 +279,87 @@ function injectStyles() {
   }
   .auth-form-notice.show { display: flex; }
 
-  /* ══ Edit Profile Modal — COSMIC DESIGN ══ */
+  /* ── Edit Profile Modal (full card) ── */
   #ep-modal-bg {
-    position: fixed; inset: 0;
-    background: rgba(2,5,30,.72);
-    backdrop-filter: blur(10px);
-    z-index: 9996;
+    position: fixed; inset: 0; background: rgba(15,23,42,.52);
+    backdrop-filter: blur(6px); z-index: 9996;
     display: flex; align-items: center; justify-content: center; padding: 16px;
-    opacity: 0; pointer-events: none; transition: opacity .24s;
+    opacity: 0; pointer-events: none; transition: opacity .22s;
   }
   #ep-modal-bg.open { opacity: 1; pointer-events: all; }
-
   .ep-modal {
-    background: linear-gradient(160deg,#050b22 0%,#0a1245 45%,#0f1e80 100%);
-    border: 1px solid rgba(80,120,255,.22);
-    border-radius: 24px; width: 100%; max-width: 430px;
-    box-shadow: 0 0 0 1px rgba(60,100,255,.1),
-                0 0 60px rgba(20,40,200,.4),
-                0 30px 80px rgba(0,0,30,.7);
-    overflow: hidden;
-    transform: scale(.94) translateY(10px);
-    transition: transform .24s cubic-bezier(.4,0,.2,1);
-    position: relative;
+    background: white; border-radius: 22px; width: 100%; max-width: 420px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.22); overflow: hidden;
+    transform: scale(.95) translateY(8px); transition: transform .22s ease;
   }
   #ep-modal-bg.open .ep-modal { transform: scale(1) translateY(0); }
-
-  /* Stars canvas */
-  #ep-stars-canvas {
-    position: absolute; inset: 0;
-    pointer-events: none; z-index: 0;
-    border-radius: 24px;
-  }
-  .ep-modal > *:not(#ep-stars-canvas) { position: relative; z-index: 1; }
-
-  /* Header */
   .ep-modal-head {
-    background: linear-gradient(135deg,rgba(10,20,80,.9),rgba(40,10,110,.9));
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(80,120,255,.2);
-    padding: 0 24px 20px;
+    background: linear-gradient(135deg,#7c3aed,#a855f7);
+    padding: 0 24px 18px; color: white; position: relative;
     display: flex; flex-direction: column; align-items: center;
-    position: relative;
   }
   .ep-modal-close {
-    position: absolute; top: 13px; right: 13px;
-    background: rgba(80,120,255,.15);
-    border: 1px solid rgba(80,120,255,.28);
-    color: #a0c0ff; width: 30px; height: 30px;
-    border-radius: 50%; cursor: pointer; font-size: .76rem;
-    display: flex; align-items: center; justify-content: center;
-    transition: all .18s;
+    position: absolute; top: 12px; right: 12px;
+    background: rgba(255,255,255,.18); border: none; color: white;
+    width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+    font-size: .76rem; display: flex; align-items: center; justify-content: center;
   }
-  .ep-modal-close:hover { background: rgba(80,120,255,.32); color: #fff; }
-
-  /* Avatar */
+  .ep-modal-close:hover { background: rgba(255,255,255,.32); }
   .ep-av-big {
-    width: 68px; height: 68px; border-radius: 50%;
-    background: linear-gradient(135deg,rgba(80,120,255,.35),rgba(140,60,255,.35));
-    border: 2.5px solid rgba(120,160,255,.5);
-    box-shadow: 0 0 0 6px rgba(80,120,255,.12), 0 0 24px rgba(80,120,255,.35);
+    width: 64px; height: 64px; border-radius: 50%;
+    background: rgba(255,255,255,.25); border: 3px solid rgba(255,255,255,.4);
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.7rem; font-weight: 800; color: #e0eaff;
-    margin: 24px auto 11px;
-    transition: box-shadow .3s;
+    font-size: 1.6rem; font-weight: 800; color: white;
+    margin: 22px auto 10px;
   }
-  .ep-modal-head h3 {
-    font-size: 1.05rem; font-weight: 800;
-    color: #c8d8ff; margin-bottom: 3px;
-  }
-  .ep-modal-head p {
-    font-size: .77rem; color: rgba(150,180,255,.65); margin: 0;
-  }
-
-  /* Body */
-  .ep-modal-body {
-    padding: 20px 22px 26px;
-    max-height: 70vh; overflow-y: auto;
-    scrollbar-width: thin; scrollbar-color: rgba(80,120,255,.3) transparent;
-  }
-  .ep-modal-body::-webkit-scrollbar { width: 3px; }
-  .ep-modal-body::-webkit-scrollbar-thumb { background: rgba(80,120,255,.35); border-radius: 3px; }
-
-  /* Section */
+  .ep-modal-head h3 { font-size: 1.05rem; font-weight: 800; color: white; margin-bottom: 2px; }
+  .ep-modal-head p  { font-size: .78rem; opacity: .8; color: white; margin: 0; }
+  .ep-modal-body { padding: 22px 24px 26px; }
   .ep-section { margin-bottom: 22px; }
   .ep-section:last-child { margin-bottom: 0; }
   .ep-section-title {
-    font-size: .67rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .7px; color: rgba(140,175,255,.7);
-    margin-bottom: 13px; padding-bottom: 8px;
-    border-bottom: 1px solid rgba(60,100,255,.18);
+    font-size: .68rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .6px; color: #64748b; margin-bottom: 12px;
+    padding-bottom: 7px; border-bottom: 1px solid #f1f5f9;
     display: flex; align-items: center; gap: 6px;
   }
-  .ep-section-title i { color: #7aa2ff; }
-
-  /* Fields */
   .ep-field { margin-bottom: 11px; }
-  .ep-field label {
-    display: block; font-size: .68rem; font-weight: 700;
-    color: rgba(140,175,255,.65); text-transform: uppercase;
-    letter-spacing: .5px; margin-bottom: 5px;
-  }
+  .ep-field label { display: block; font-size: .7rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
   .ep-field input {
-    width: 100%; padding: 10px 14px;
-    border: 1.5px solid rgba(60,100,255,.25);
-    border-radius: 10px;
-    font-family: inherit; font-size: .875rem;
-    color: #dce8ff;
-    background: rgba(10,20,70,.6);
-    backdrop-filter: blur(6px);
-    outline: none; transition: border-color .18s, box-shadow .18s;
+    width: 100%; padding: 10px 13px; border: 2px solid #e2e8f0; border-radius: 10px;
+    font-family: inherit; font-size: .875rem; color: #1e293b;
+    outline: none; transition: border-color .18s; background: white;
   }
-  .ep-field input::placeholder { color: rgba(140,170,255,.35); }
-  .ep-field input:focus {
-    border-color: rgba(100,150,255,.65);
-    box-shadow: 0 0 0 3px rgba(60,100,255,.15);
-  }
-  .ep-field input[readonly] {
-    background: rgba(8,16,55,.5);
-    color: rgba(140,170,255,.45);
-    cursor: default;
-    border-color: rgba(60,100,255,.12);
-  }
-
-  /* Save button */
+  .ep-field input:focus { border-color: #7c3aed; }
+  .ep-field input[readonly] { background: #f8fafc; color: #94a3b8; cursor: default; }
   .ep-save-btn {
     width: 100%; padding: 11px;
-    background: linear-gradient(135deg,#3b4eff,#8b3aff);
-    color: white; border: none; border-radius: 11px;
+    background: linear-gradient(135deg,#7c3aed,#a855f7);
+    color: white; border: none; border-radius: 10px;
     font-family: inherit; font-size: .9rem; font-weight: 700;
-    cursor: pointer; transition: all .18s; margin-top: 4px;
-    box-shadow: 0 0 18px rgba(80,80,255,.4);
+    cursor: pointer; transition: all .18s; margin-top: 2px;
+    box-shadow: 0 3px 12px rgba(124,58,237,.3);
   }
-  .ep-save-btn:hover { opacity: .9; transform: translateY(-1px); box-shadow: 0 0 28px rgba(80,80,255,.6); }
-  .ep-save-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
-
-  /* Password reset button */
+  .ep-save-btn:hover { opacity: .9; transform: translateY(-1px); }
+  .ep-save-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
   .ep-reset-btn {
     width: 100%; padding: 10px;
-    background: rgba(60,80,255,.1);
-    color: #a0c0ff;
-    border: 1.5px solid rgba(80,120,255,.3);
-    border-radius: 10px;
+    background: transparent; color: #7c3aed;
+    border: 2px solid rgba(124,58,237,.3); border-radius: 10px;
     font-family: inherit; font-size: .875rem; font-weight: 600;
-    cursor: pointer; transition: all .18s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
+    cursor: pointer; transition: all .18s; display: flex; align-items: center; justify-content: center; gap: 7px;
   }
-  .ep-reset-btn:hover {
-    background: rgba(60,80,255,.2);
-    border-color: rgba(120,160,255,.6);
-    color: #c8daff;
-  }
-  .ep-reset-btn:disabled { opacity: .4; cursor: not-allowed; }
-
-  /* Status messages */
+  .ep-reset-btn:hover { background: rgba(124,58,237,.06); border-color: #7c3aed; }
   .ep-msg {
-    padding: 9px 13px; border-radius: 9px; font-size: .8rem;
+    padding: 9px 12px; border-radius: 8px; font-size: .8rem;
     font-weight: 500; margin-top: 10px; display: none;
   }
-  .ep-msg.ok  {
-    background: rgba(16,185,129,.12);
-    border: 1px solid rgba(16,185,129,.28);
-    color: #6ee7b7;
-  }
-  .ep-msg.err {
-    background: rgba(239,68,68,.1);
-    border: 1px solid rgba(239,68,68,.25);
-    color: #fca5a5;
-  }
-
-  /* Phone-missing banner */
+  .ep-msg.ok  { background: #ecfdf5; color: #065f46; }
+  .ep-msg.err { background: #fee2e2; color: #7f1d1d; }
   .ep-phone-banner {
-    background: rgba(245,158,11,.1);
-    border: 1.5px solid rgba(245,158,11,.28);
-    border-radius: 9px; padding: 9px 13px; font-size: .8rem;
-    color: #fcd34d; margin-bottom: 14px; font-weight: 600; display: none;
+    background: rgba(245,158,11,.1); border: 1.5px solid rgba(245,158,11,.3);
+    border-radius: 9px; padding: 9px 12px; font-size: .8rem;
+    color: #92400e; margin-bottom: 14px; font-weight: 600; display: none;
   }
 
   /* ── Rules Modal ── */
@@ -604,7 +507,7 @@ function buildModal() {
   bg.innerHTML = `
   <div class="auth-modal">
     <div class="auth-modal-head">
-      <button class="auth-modal-close" onclick="authCloseModal()" aria-label="Close"><i class="fas fa-times"></i></button>
+      <button class="auth-modal-close" onclick="authCloseModal()"><i class="fas fa-times"></i></button>
       <h3 id="auth-m-title"></h3>
       <p id="auth-m-sub"></p>
     </div>
@@ -619,7 +522,7 @@ function buildModal() {
       </div>
       <div class="auth-field">
         <label id="auth-lbl-email"></label>
-        <input type="email" id="auth-email-input" autocomplete="email" aria-label="Email address">
+        <input type="email" id="auth-email-input" autocomplete="email">
       </div>
       <div class="auth-field">
         <label id="auth-lbl-pass"></label>
@@ -629,11 +532,11 @@ function buildModal() {
         <label id="auth-lbl-phone"></label>
         <input type="tel" id="auth-phone-input" autocomplete="tel">
       </div>
-      <button class="auth-submit-btn" id="auth-submit-btn" onclick="authSubmit()" aria-label="Submit form"></button>
+      <button class="auth-submit-btn" id="auth-submit-btn" onclick="authSubmit()"></button>
       <div class="auth-error" id="auth-error"></div>
       <div class="auth-switch">
         <span id="auth-switch-text"></span>
-        <button onclick="authToggleMode()" id="auth-switch-link" aria-label="Toggle between sign in and create account" style="background:none;border:none;color:#3b82f6;cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;padding:0;"></button>
+        <a onclick="authToggleMode()" id="auth-switch-link"></a>
       </div>
     </div>
   </div>`;
@@ -806,7 +709,7 @@ function buildRulesModal() {
   bg.innerHTML = `
   <div class="rules-modal">
     <div class="rules-modal-head">
-      <button class="rules-modal-close" onclick="authCloseRules()" aria-label="Close rules"><i class="fas fa-times"></i></button>
+      <button class="rules-modal-close" onclick="authCloseRules()"><i class="fas fa-times"></i></button>
       <h3 id="rules-title"></h3>
       <p id="rules-subtitle"></p>
     </div>
@@ -1019,17 +922,7 @@ document.addEventListener('click', e => {
 // AUTH ACTIONS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 async function authSubmit() {
-  // Firebase not ready yet — init and retry once
-  if (!_auth) {
-    initAuth();
-    const btn = document.getElementById('auth-submit-btn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Connecting…'; }
-    setTimeout(() => {
-      if (btn) { btn.disabled = false; btn.textContent = t(isRegMode ? 'regBtn' : 'loginBtn'); }
-      authSubmit();
-    }, 600);
-    return;
-  }
+  if (!_auth) return;
   const email = document.getElementById('auth-email-input').value.trim();
   const pass  = document.getElementById('auth-pass-input').value;
   const name  = document.getElementById('auth-name-input').value.trim();
@@ -1113,7 +1006,7 @@ function watchOrderForm() {
 function watchLangChange() {
   document.querySelectorAll('.language-option, .language-option-fixed').forEach(el => {
     el.addEventListener('click', () => {
-      setTimeout(() => { renderAll(); if (modalOpen) syncModalUI(); }, 60);
+      setTimeout(() => { renderAll(); if (modalOpen) syncModalUI(); if(typeof wbpMsgUpdateLangUI==='function')wbpMsgUpdateLangUI(); }, 60);
     });
   });
 }
@@ -1127,7 +1020,6 @@ function buildEditProfileModal() {
   bg.id = 'ep-modal-bg';
   bg.innerHTML = `
   <div class="ep-modal">
-    <canvas id="ep-stars-canvas"></canvas>
     <div class="ep-modal-head">
       <button class="ep-modal-close" onclick="authCloseEditProfile()"><i class="fas fa-times"></i></button>
       <div class="ep-av-big" id="ep-av-big">?</div>
@@ -1161,7 +1053,7 @@ function buildEditProfileModal() {
       <!-- Password reset section -->
       <div class="ep-section">
         <div class="ep-section-title"><i class="fas fa-lock"></i> Password</div>
-        <p style="font-size:.82rem;color:rgba(150,180,255,.55);margin-bottom:12px;line-height:1.55;">Send a password reset link to your email address.</p>
+        <p style="font-size:.82rem;color:#64748b;margin-bottom:12px;line-height:1.55;">Send a password reset link to your email address.</p>
         <button class="ep-reset-btn" id="ep-reset-btn" onclick="authSendPasswordReset()">
           <i class="fas fa-envelope"></i> Send Password Reset Email
         </button>
@@ -1175,41 +1067,6 @@ function buildEditProfileModal() {
   ['ep-name-input','ep-phone-input'].forEach(id => {
     document.getElementById(id)?.addEventListener('keydown', e => { if (e.key === 'Enter') authSaveProfile(); });
   });
-  // Init cosmic stars
-  _initEpStars();
-}
-
-function _initEpStars() {
-  const canvas = document.getElementById('ep-stars-canvas');
-  if (!canvas) return;
-  const modal = canvas.parentElement;
-  const ctx = canvas.getContext('2d');
-  const stars = Array.from({length: 60}, () => ({
-    x: Math.random(), y: Math.random(),
-    r: Math.random() * 1.3 + 0.35,
-    op: Math.random(),
-    d: (Math.random() - 0.5) * 0.013
-  }));
-  let raf;
-  function resize() {
-    canvas.width  = modal.offsetWidth;
-    canvas.height = modal.offsetHeight;
-  }
-  resize();
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    stars.forEach(s => {
-      s.op += s.d;
-      if (s.op <= 0 || s.op >= 1) s.d *= -1;
-      ctx.beginPath();
-      ctx.arc(s.x * canvas.width, s.y * canvas.height, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(180,210,255,${Math.max(0.04, Math.min(1, s.op))})`;
-      ctx.fill();
-    });
-    raf = requestAnimationFrame(draw);
-  }
-  draw();
-  new ResizeObserver(resize).observe(modal);
 }
 
 function authOpenEditProfile(e) {
@@ -1232,7 +1089,7 @@ function authOpenEditProfile(e) {
   document.getElementById('ep-lbl-phone').textContent  = t('epPhone');
   document.getElementById('ep-save-btn').textContent   = t('epSave');
   document.getElementById('ep-save-btn').disabled      = false;
-  document.getElementById('ep-save-btn').style.background = 'linear-gradient(135deg,#3b4eff,#8b3aff)';
+  document.getElementById('ep-save-btn').style.background = 'linear-gradient(135deg,#7c3aed,#a855f7)';
   epShowMsg('ep-save-msg',  '', '');
   epShowMsg('ep-reset-msg', '', '');
 
@@ -1306,7 +1163,6 @@ function epShowMsg(id, text, type) {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // GLOBALS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-window._authRenderAll     = renderAll;   // used by dm-chat.js to sync mobile menu after chat login
 window.authOpenModal      = authOpenModal;
 window.authCloseModal     = authCloseModal;
 window.authToggleMode     = authToggleMode;
@@ -1323,26 +1179,18 @@ window.authSendPasswordReset = authSendPasswordReset;
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // BOOT
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-function boot() {
+document.addEventListener('DOMContentLoaded', () => {
   injectStyles();
   buildModal();
   buildNavWrap();
   buildMobileSection();
   buildRulesModal();
-  renderAll(); // Show guest button immediately — don't wait for Firebase
   initAuth();
   watchOrderForm();
   watchLangChange();
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && modalOpen) authCloseModal();
   });
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', boot);
-} else {
-  // DOM already ready (script loaded late or deferred)
-  boot();
-}
+});
 
 })();
