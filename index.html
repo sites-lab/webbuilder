@@ -3304,6 +3304,23 @@
                 console.error('Firestore save error:', e);
             }
         }
+
+        // ── Telegram Admin Notification (WebBuilder) ──────────────────────
+        const _WB_BOT_TOKEN  = '8651715066:AAH-H39T0tgtXVW7ZXmx41MWQrboIbRNrxY';
+        const _WB_ADMIN_CHAT = '5222030484';
+        async function notifyTelegramAdmin_WB(text) {
+            try {
+                await fetch(`https://api.telegram.org/bot${_WB_BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: _WB_ADMIN_CHAT,
+                        text,
+                        parse_mode: 'Markdown'
+                    })
+                });
+            } catch(e) { console.warn('Telegram notify failed:', e); }
+        }
     </script>
 
 </head>
@@ -3387,7 +3404,7 @@
             
             <div class="mobile-contact-info">
                 <p><i class="fas fa-phone"></i> +40 729 552 767</p>
-                <p><i class="fas fa-envelope"></i> <a href="mailto:web.builder01@gmail.com" style="color:inherit;">web.builder01@gmail.com</a></p>
+                <p><i class="fas fa-envelope"></i> <a href="/cdn-cgi/l/email-protection#136476713d71667a7f777661232253747e727a7f3d707c7e" style="color:inherit;"><span class="__cf_email__" data-cfemail="8ff8eaeda1edfae6e3ebeafdbfbecfe8e2eee6e3a1ece0e2">[email&#160;protected]</span></a></p>
             </div>
         </div>
     </div>
@@ -3576,7 +3593,7 @@
         <div class="bg-rocket bg-rocket-6"></div>
         <div class="bg-rocket bg-rocket-7"></div>
 
-        <script>
+        <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         (function(){
           var tpl = document.getElementById('tpl-rocket');
           if (!tpl) return;
@@ -4114,7 +4131,7 @@
                     <h3 data-i18n="footer.contact">Contact</h3>
                     <ul>
                         <li><i class="fas fa-phone"></i> +40 729 552 767</li>
-                        <li><i class="fas fa-envelope"></i> <a href="mailto:web.builder01@gmail.com" style="color:inherit;">web.builder01@gmail.com</a></li>
+                        <li><i class="fas fa-envelope"></i> <a href="/cdn-cgi/l/email-protection#93e4f6f1bdf1e6fafff7f6e1a3a2d3f4fef2faffbdf0fcfe" style="color:inherit;"><span class="__cf_email__" data-cfemail="4b3c2e2965293e22272f2e397b7a0b2c262a222765282426">[email&#160;protected]</span></a></li>
                         <li><i class="fas fa-map-marker-alt"></i> <span data-i18n="footer.location">Bucharest, Romania</span></li>
                     </ul>
                 </div>
@@ -4263,7 +4280,7 @@
 
 
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // Enhanced Mobile Menu System
         class EnhancedMobileMenu {
             constructor() {
@@ -5744,6 +5761,21 @@ try {
 // Save to Firestore (real database)
 saveOrderToFirestore(orderData);
 
+// Notify admin on Telegram — always fires, even if Firestore is unavailable
+notifyTelegramAdmin_WB(
+    `🛒 *New Order \\#${(orderData.order_id || '—').replace(/-/g, '\\-')}*\n\n` +
+    `📦 *Package:* ${orderData.service_type || '—'}\n` +
+    `💰 *Total:* EUR ${orderData.total_price || '0'}\n` +
+    `👤 *Name:* ${orderData.customer_name || '—'}\n` +
+    `📧 *Email:* ${orderData.customer_email || '—'}\n` +
+    `📱 *Phone:* ${orderData.customer_phone || '—'}\n` +
+    `🌐 *Domain:* ${orderData.domain || '—'}\n` +
+    `🔧 *Add-ons:* ${Array.isArray(orderData.add_ons) && orderData.add_ons.length ? orderData.add_ons.map(a=>a.name).join(', ') : '—'}\n` +
+    `📝 *Notes:* ${orderData.additional_notes || orderData.project_description || '—'}\n` +
+    `🕐 *Time:* ${new Date().toLocaleString('en-GB')}\n\n` +
+    `👉 Check admin panel for full details.`
+);
+
 const submitBtn = this.submitForm.querySelector('.submit-order');
 const originalText = submitBtn.innerHTML;
 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
@@ -6310,6 +6342,14 @@ return false;
                 lastUpdated:new Date().toISOString(),
                 hasUnreadAdmin:true
             },{merge:true});
+            // Notify admin on Telegram
+            notifyTelegramAdmin_WB(
+                `💬 *New Message from User*\n\n` +
+                `👤 ${authorName} (${_dmUser.email})\n` +
+                `📝 "${text}"\n\n` +
+                `🕐 ${new Date().toLocaleString('en-GB')}\n` +
+                `👉 Check admin panel → Messages`
+            );
         }catch(e){console.error('Send DM:',e);}
         finally{btn.disabled=false;input.focus();}
     }
@@ -6440,15 +6480,10 @@ return false;
     Object.defineProperty(window,'_dmUser',{get:()=>_dmUser});
 
     // Enter key support
-    document.addEventListener('DOMContentLoaded',()=>{
-        document.getElementById('wbp-msg-txt')?.addEventListener('keydown',e=>{ if(e.key==='Enter')wbpMsgSend(); });
-        document.getElementById('wbp-msg-email')?.addEventListener('keydown',e=>{ if(e.key==='Enter')document.getElementById('wbp-msg-pass')?.focus(); });
-        document.getElementById('wbp-msg-pass')?.addEventListener('keydown',e=>{ if(e.key==='Enter')wbpMsgSend(); });
+    document.getElementById('wbp-msg-txt')?.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); wbpMsgSend(); }
     });
-
-    dmFirebase();
-    }());
-    </script>
-
+})();
+</script>
 </body>
 </html>
